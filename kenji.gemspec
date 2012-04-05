@@ -3,9 +3,9 @@ require 'kenji/version'
 
 Gem::Specification.new do |s|
     s.name        = 'kenji'
-    s.version     = Lorem::VERSION
+    s.version     = Kenji::VERSION
     s.platform    = Gem::Platform::RUBY
-    s.date        = '2012-04-5'
+    s.date        = '2012-04-05'
     s.summary     = 'Kenji'
     s.description = 'A lightweight Ruby web framework.'
     s.authors     = ['Kenneth Ballenegger']
