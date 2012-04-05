@@ -1,0 +1,6 @@
+#!/usr/bin/env ruby
+
+path = ARGV.first || '.'
+
+
+# TODO: create dir structure here
