@@ -1,0 +1,52 @@
+#!/usr/bin/ruby
+
+class Main
+
+  def self.init
+    require 'rubygems'
+    require 'bundler/setup'
+    require $root+'/lib/kenji/kenji'
+    @@k = Kenji::Kenji.new({}, $root)
+  end
+
+  def self.main args
+    verb = args.first.to_sym unless args.empty?
+
+    # case verb
+    # when :import
+    #   puts "Calling import script..."
+    #   @@k.controller_for(:import)._caffeine @@k
+    # when :process
+    #   puts "Processing values..."
+    #   @@k.controller_for(:processing)._value @@k
+    # when :configure
+    #   require $root + '/lib/configure'
+    #   skip_update = (args[1] =~ /-?-?skip[-_]update/)
+    #   AnalyticsModule.configure __FILE__, skip_update
+    # else
+    #   puts <<-EOO
+    #   No verb defined. Usage: ./main [verb]
+    # 
+    #   configure [--skip-update]:
+    #       process the value of users
+    #       optionally, skip the self-update process
+    #   import:
+    #       import install from caffeine.io
+    #   process:
+    #       process the value of users
+    #   EOO
+    # end
+  end
+
+  def kenji
+    @@k
+  end
+end
+
+require 'pathname'
+$root = File.dirname Pathname.new(__FILE__).realpath.to_s
+
+Main.init unless ARGV.first == 'configure'
+if __FILE__ == $0
+  Main.main ARGV
+end
