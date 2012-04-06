@@ -1,6 +1,5 @@
 #!/usr/bin/env ruby
 
-path = ARGV.first || '.'
-
+path = File.realpath(ARGV.first || '.')
 
 # TODO: create dir structure here

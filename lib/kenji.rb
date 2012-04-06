@@ -1,5 +1,7 @@
 # Bare-bones, ruby implementation of Paraglide
-require 'stringio'
+# require 'stringio'
+
+# TODO: rewrite this file!
 
 module Kenji
   class Kenji
