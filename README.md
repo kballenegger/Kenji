@@ -24,12 +24,13 @@ Big architural decisions:
 
     Possibility: use a DSL inside classes for http methods?
 
-    ```
+    ```ruby
     class Main
         get :index do
             respond { hello: 'world' }
         end
     end
+    ```
 
 - `kenji init` will simply create the base directory structure for a kenji app
 - Figure out best format for configuration files
