@@ -1,6 +1,21 @@
 #!/usr/bin/env ruby
 
-path = File.realpath(ARGV.first || '.')
+path = File.realpath('.') << '/' << ARGV.first || '.'
+app_name =  File.basename(path)
 
-# TODO: create dir structure here
+# TODO: figure out how to get this once packaged
+init_source = File.realpath(File.dirname(File.dirname(__FILE__))) << '/inited'
+
+for_earch_item = lambda do |item, base|
+    next if item == '.' || item == '..'
+    # item.gsub!('__APP_NAME__', app_name) # need to do this later, breaks stuff below
+
+    if File.directory?("#{base}/#{item}")
+        Dir.foreach("#{base}/#{item}") { |i| for_earch_item.call(i, "#{base}/#{item}") }
+    else
+        puts "#{base}/#{item}"
+    end
+end
+
+Dir.foreach(init_source) { |i| for_earch_item.call(i, init_source) }
 
