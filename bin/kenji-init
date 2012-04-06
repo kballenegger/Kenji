@@ -3,3 +3,4 @@
 path = File.realpath(ARGV.first || '.')
 
 # TODO: create dir structure here
+
