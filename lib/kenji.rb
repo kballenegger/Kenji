@@ -57,6 +57,8 @@ module Kenji
       end
 
       [@status, @headers, [out]]
+    rescue KenjiStaticResponse => e
+      [@status, @headers, [e.data]]
     end
 
     def load path
@@ -153,8 +155,7 @@ module Kenji
         while line = file.gets
           data += line
         end
-        print data
-        return false
+        raise KenjiStaticResponse.new(data)
       end
       
       segments = path.split '/'
@@ -248,4 +249,11 @@ module Kenji
         @response = response
     end
   end # early exit containing a response
+  class KenjiStaticResponse < StandardError
+    attr_accessor :data
+    def initialize(data)
+        @data = data
+    end
+  end # early exit containing a response
 end
+
