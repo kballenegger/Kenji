@@ -33,4 +33,4 @@ end
 
 Dir.foreach(init_source) { |i| for_earch_item.call(i, '.') }
 
-`cd #{path}; bundle install`
+system("cd #{path}; bundle install")
