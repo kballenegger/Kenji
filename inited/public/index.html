@@ -1,0 +1,19 @@
+<html>
+<head>
+    <title>Hello, world!</title>
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript" charset="utf-8">
+        $(document).ready(function() {
+            $.ajax('/main/index.json', {
+                success: function(data) {
+                    $('#name').html(data.hello);
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    Hello, <span id="name">User</span>!
+</body>
+</html>
