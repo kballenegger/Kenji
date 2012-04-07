@@ -1,9 +1,10 @@
 #!/usr/bin/env ruby
 
-path = File.realpath('.' << '/' << (ARGV.first || '.'))
+path = '.' << '/' << (ARGV.first || '.')
 app_name =  File.basename(path)
 
-Dir.mkdir(path) unless File.directory(path)
+Dir.mkdir(path) unless File.directory?(path)
+path = File.realpath(path)
 
 init_source = File.realpath(File.dirname(File.dirname(__FILE__))) << '/inited'
 
