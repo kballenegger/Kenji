@@ -32,9 +32,8 @@ module Kenji
 
     def call
 
-      out = buffer do
-        
-        next unless route # parse the routing
+      out = ''
+      if route # parse the routing
         
         # Loading our controller on the fly!
         if File.exists? "#{@root}controllers/#{@controller}.rb"
@@ -42,9 +41,9 @@ module Kenji
           if controller = controller_for(@controller)
             # Send message, if it supports it. Fall back to :index, or fail.
             if controller.respond_to? @action.to_sym
-              dispatch_action controller, @action, @params
+              out = prepare_output(dispatch_action(controller, @action, @params))
             elsif controller.respond_to? :index
-              dispatch_action controller, 'index', [@action]+@params
+              out = prepare_output(dispatch_action(controller, 'index', [@action]+@params))
             else
               # TODO: Fall back to main controller.
               error "Could not call controller/action."
@@ -122,23 +121,26 @@ module Kenji
     
     def respond code, message, hash={}
       # TODO: respond w/ status code as well
-      case @extension
-      when :html
-        puts message
-        # Deprecated
-      when :json
-        response = {
-          :status => code,
-          :message => message
-        }
-        hash.each { |k,v| response[k]=v }
-        puts response.to_json        
-      end
-      raise EarlyExit
+      response = {
+        :status => code,
+        :message => message
+      }
+      hash.each { |k,v| response[k]=v }
+      raise KenjiResponse.new(response)
     end
     
     # Private methods
     private
+    def prepare_output hash={}
+      case @extension
+      when :html
+        # Deprecated
+        return hash[:message]
+      when :json
+        return hash.to_json        
+      end
+    end
+    
     def route
       path = @env['PATH_INFO']
 
@@ -181,6 +183,7 @@ module Kenji
       return true
     end
 
+    # Deprecated
     def buffer *args, &block
       old_stdout = $stdout
       $stdout = StringIO.new
@@ -196,16 +199,18 @@ module Kenji
 
       case arity = controller.method(action.to_sym).arity
       when 0
-        controller.send action.to_sym
+        return controller.send action.to_sym
       when 1
-        controller.send action.to_sym, self
+        return controller.send action.to_sym, self
       when (3..1.0/0)
-        controller.send action.to_sym, self, *params[(0..arity-1)]
+        return controller.send action.to_sym, self, *params[(0..arity-1)]
       when -1
-        controller.send action.to_sym, *params
+        return controller.send action.to_sym, *params
       when (-1.0/0..-2)
-        controller.send action.to_sym, self, *params
+        return controller.send action.to_sym, self, *params
       end
+    rescue KenjiResponse => e
+        return e.response
     rescue EarlyExit => e
       return # controller exited early, it's all good
     end
@@ -237,4 +242,10 @@ module Kenji
   end
   
   class EarlyExit < StandardError; end # lets us exit out of a kenji call, like `exit`
+  class KenjiResponse < EarlyExit
+    attr_accessor :response
+    def initialize(response)
+        @response = response
+    end
+  end # early exit containing a response
 end
