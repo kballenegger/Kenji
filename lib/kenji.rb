@@ -232,7 +232,7 @@ module Kenji
     end
 
     def load_lib name
-      require File.expand_path File.dirname(__FILE__) + '/lib/' + name
+      require File.expand_path File.dirname(__FILE__) + '/kenji/' + name
     end
   end
   
