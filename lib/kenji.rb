@@ -11,7 +11,7 @@ module Kenji
 
     def initialize env, root
       @headers = {
-        "Content-Type" => "text/html"
+        'Content-Type' => 'application/json'
       }
       @status = 200
       root = File.expand_path root
@@ -32,7 +32,7 @@ module Kenji
 
     def call
 
-      out = buffer {
+      out = buffer do
         
         next unless route # parse the routing
         
@@ -55,7 +55,7 @@ module Kenji
         else
           error "Could not find appropriate controller."
         end
-      }
+      end
 
       [@status, @headers, [out]]
     end
@@ -89,6 +89,7 @@ module Kenji
       return controller if controller
     end
     
+    # Deprecated
     def input_raw
       return @raw_input if @raw_input
       return unless @env
@@ -106,6 +107,7 @@ module Kenji
       end if raw
     end
     
+    # Deprecated
     def input_as_form
       return unless raw = input_raw
       pairs = raw.split('&')
@@ -119,19 +121,11 @@ module Kenji
     # Responding to the request and rendering
     
     def respond code, message, hash={}
+      # TODO: respond w/ status code as well
       case @extension
       when :html
-        # TODO: layout
-        puts <<-EOF
-          <html>
-              <head>
-                  <title>Kenji</title>
-              </head>
-              <body>
-                  <p>#{message}</p>
-              </body>
-          </html>
-        EOF
+        puts message
+        # Deprecated
       when :json
         response = {
           :status => code,
