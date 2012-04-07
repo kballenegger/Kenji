@@ -3,7 +3,6 @@
 path = File.realpath('.' << '/' << (ARGV.first || '.'))
 app_name =  File.basename(path)
 
-# TODO: figure out how to get this once packaged
 init_source = File.realpath(File.dirname(File.dirname(__FILE__))) << '/inited'
 
 for_earch_item = lambda do |item, base|
