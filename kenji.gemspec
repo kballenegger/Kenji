@@ -15,7 +15,6 @@ Gem::Specification.new do |s|
 
     s.add_dependency 'json'
     s.add_dependency 'rack'
-    s.add_dependency 'passenger'
         
     s.files         = `git ls-files`.split("\n")
     s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")

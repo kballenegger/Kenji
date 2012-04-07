@@ -3,6 +3,6 @@ require 'json'
 class MainController
     
     def index kenji
-        puts "Hello, world!"
+        {hello: :world}
     end
 end
