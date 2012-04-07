@@ -155,6 +155,7 @@ module Kenji
         while line = file.gets
           data += line
         end
+        @headers['Content-Type'] = 'text/html' # TODO: figure this out dynamically
         raise KenjiStaticResponse.new(data)
       end
       
