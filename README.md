@@ -16,6 +16,20 @@ Some of the main ideas behind Kenji include:
 - The app should be usable from the command-line and as a library the same as if it were used as an HTTP app to make unit testing and scripting much easier.
 
 
+# Usage
+
+Getting started with Kenji could not be any easier. All it takes is a few lines and a terminal:
+
+    $ gem install kenji         # (once kenji is on the rubygems main source)
+    $ kenji-init app_name; cd app_name
+    $ rackup                    # launch the webserver
+
+And already, your app is ready to go:
+
+    $ curl http://localhost:9292/
+    {"hello":"world"}
+
+
 ## Todos
 
 Big architural decisions:
