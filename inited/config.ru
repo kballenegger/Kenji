@@ -5,6 +5,7 @@ require 'kenji'
 
 # use Rack::ShowExceptions
 
-run do |env|
+app = proc do |env|
   Kenji::Kenji.new(env, File.dirname(__FILE__)).call
 end
+run app
