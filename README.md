@@ -16,7 +16,7 @@ Some of the main ideas behind Kenji include:
 - The app should be usable from the command-line and as a library the same as if it were used as an HTTP app to make unit testing and scripting much easier.
 
 
-# Usage
+## Usage
 
 Getting started with Kenji could not be any easier. All it takes is a few lines and a terminal:
 
