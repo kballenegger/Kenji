@@ -10,7 +10,6 @@ Gem::Specification.new do |s|
     s.description = 'A lightweight Ruby web framework.'
     s.authors     = ['Kenneth Ballenegger']
     s.email       = ['kenneth@ballenegger.com']
-    s.files       = ['lib/kenji.rb']
     s.homepage    =
         'https://github.com/kballenegger/kenji'
 
