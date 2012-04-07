@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-path = File.realpath('.') << '/' << ARGV.first || '.'
+path = File.realpath('.' << '/' << (ARGV.first || '.'))
 app_name =  File.basename(path)
 
 # TODO: figure out how to get this once packaged
@@ -8,14 +8,26 @@ init_source = File.realpath(File.dirname(File.dirname(__FILE__))) << '/inited'
 
 for_earch_item = lambda do |item, base|
     next if item == '.' || item == '..'
-    # item.gsub!('__APP_NAME__', app_name) # need to do this later, breaks stuff below
+    item_to_create = item.gsub('__APP_NAME__', app_name)
 
-    if File.directory?("#{base}/#{item}")
-        Dir.foreach("#{base}/#{item}") { |i| for_earch_item.call(i, "#{base}/#{item}") }
+    
+    if File.directory?("#{init_source}/#{base}/#{item}")
+        Dir.mkdir("#{path}/#{base}/#{item_to_create}") unless File.directory?("#{path}/#{base}/#{item}")
+        puts "Initializing directory #{base}/#{item_to_create}"
+        Dir.foreach("#{init_source}/#{base}/#{item}") { |i| for_earch_item.call(i, "#{base}/#{item}") }
     else
-        puts "#{base}/#{item}"
+        puts "Generating content for file #{base}/#{item_to_create}"
+        data = ''
+        f = File.open("#{init_source}/#{base}/#{item}", 'r')
+        while line = f.gets
+            data += (line.gsub('__APP_NAME__', app_name))
+        end
+        f.close
+        f = File.open("#{path}/#{base}/#{item_to_create}", 'w')
+        f.puts data
+        f.close
     end
 end
 
-Dir.foreach(init_source) { |i| for_earch_item.call(i, init_source) }
+Dir.foreach(init_source) { |i| for_earch_item.call(i, '.') }
 
