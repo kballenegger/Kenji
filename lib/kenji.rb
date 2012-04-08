@@ -204,7 +204,7 @@ module Kenji
         return controller.send action.to_sym
       when 1
         return controller.send action.to_sym, self
-      when (3..1.0/0)
+      when (2..1.0/0)
         return controller.send action.to_sym, self, *params[(0..arity-1)]
       when -1
         return controller.send action.to_sym, *params
