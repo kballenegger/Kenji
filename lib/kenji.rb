@@ -1,5 +1,6 @@
 # Bare-bones, ruby implementation of Paraglide
 # require 'stringio'
+require 'json'
 
 # TODO: rewrite this file!
 
