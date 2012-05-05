@@ -58,6 +58,8 @@ module Kenji
       end
 
       [@status, @headers, [out]]
+    rescue KenjiResponse => e
+      [@status, @headers, prepare_output([e.response])]
     rescue KenjiStaticResponse => e
       [@status, @headers, [e.data]]
     end
