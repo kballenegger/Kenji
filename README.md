@@ -19,7 +19,7 @@ Some of the main ideas behind Kenji include:
 
 Kenji wants you to organize your code into logical units of code, aka. controllers. The controllers will automatically be selected based on the url requested, and the rest of the route is defined inline in the controller, with a domain-specific-language.
 
-The caconical Hello World example in kenji would look like this:
+The caconical Hello World example for the URL `/hello/world` in kenji would look like this, in `controller/hello.rb`:
 
 ````ruby
 class HelloController < Kenji::Controller
