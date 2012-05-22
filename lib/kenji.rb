@@ -1,6 +1,5 @@
-# Bare-bones, ruby implementation of Paraglide
-# require 'stringio'
 require 'json'
+require 'kenji/controller'
 
 # TODO: rewrite this file!
 
