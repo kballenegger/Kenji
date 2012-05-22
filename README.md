@@ -10,10 +10,45 @@ Kenji is a lightweight MVC web framework for Ruby.
 
 Some of the main ideas behind Kenji include:
 
-- No defining routes: convention trumps configuration here. Automatic URL mapping /:controller/:action/:params.
+- Routes are defined where it makes sense, not in a config file. More on this below.
 - The backend is a JSON-only API, the front-end is a html/js wrapper. Front-end architecture is up to the user.
-- Lightweight: Kenji only takes care of routing and overall app architecture. Everything else is up to the user.
-- The app should be usable from the command-line and as a library the same as if it were used as an HTTP app to make unit testing and scripting much easier.
+- Lightweight: Kenji only takes care of routing and overall app architecture. Everything else (data layer, ORM, web server, etc.) is up to the user.
+- The app should be usable from the command-line and as a library the same as if it were used as an HTTP app to make unit testing, scripting and development much easier.
+
+### Routing
+
+Kenji wants you to organize your code into logical units of code, aka. controllers. The controllers will automatically be selected based on the url requested, and the rest of the route is defined inline in the controller, with a domain-specific-language.
+
+The caconical Hello World example in kenji would look like this:
+
+````ruby
+class HelloController < Kenji::Controller
+    get '/world' do
+        {hello: :world}
+    end
+end
+````
+
+A more representative example might be:
+
+````ruby
+class UserController < Kenji::Controller
+
+    # ...
+
+    get '/:id/friends' do |id|
+        # list friends for id
+    end
+
+    post '/:id/friend/:id' do |id, friend_id|
+        # add connection from user id to friend_id
+    end
+
+    delete '/:id/friend/:id' do |id, friend_id|
+        # delete connection from user id to friend_id
+    end
+end
+````
 
 
 ## Usage
@@ -32,31 +67,14 @@ And already, your app is ready to go:
 
 ## Todos
 
-Big architural decisions:
 
-- Figure out meaning of HTTP method.
-
-    Possibility: use a DSL inside classes for http methods?
-
-    ```ruby
-    class Main
-        get :index do
-            respond { hello: 'world' }
-        end
-    end
-    ```
-
-- `kenji init` will simply create the base directory structure for a kenji app
-- Figure out best format for configuration files
-
-Misc stuff:
-
-- Figure out out to serve this up in a gem.
+- Figure out best format for configuration files. # note: JSON sounds pretty damn good. vijson will make that much friendlier
 - Figure out serving static files.
 - Switch to API-only model, json only.
+- Anything with a TODO comment
 
 
 ## Requirements & Assumptions
 
 - Requires rubygems and bundler.
-- Requires Ruby 1.8.7 or 1.9.
+- Requires Ruby 1.9.
