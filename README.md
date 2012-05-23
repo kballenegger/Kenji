@@ -3,17 +3,22 @@
 
 # Kenji
 
-Kenji is a lightweight MVC web framework for Ruby.
+Kenji is a lightweight backend framework for Ruby.
 
 
-## Ideas
+## Rationale
 
-Some of the main ideas behind Kenji include:
+Kenji believes that a traditional web application should be divided into two parts: an client application running in the browser (HTML/JS/CSS), and a backend API with which it communicates. Kenji is the backend side of the equation, while the front-end architecture is left up to the user. (Popular options are [backbone][] and [spine][].)
 
-- Routes are defined where it makes sense, not in a config file. More on this below.
-- The backend is a JSON-only API, the front-end is a html/js wrapper. Front-end architecture is up to the user.
-- Lightweight: Kenji only takes care of routing and overall app architecture. Everything else (data layer, ORM, web server, etc.) is up to the user.
-- The app should be usable from the command-line and as a library the same as if it were used as an HTTP app to make unit testing, scripting and development much easier.
+[backbone]: http://documentcloud.github.com/backbone/
+[spine]: http://spinejs.com/
+
+Kenji believes that in order to keep clean and organized code, routes should be defined inline with their code.
+
+Kenji believes that an app should be usable as a library from scripts or from the command line. An app should be automatable and testable.
+
+Lastly, Kenji is opinionated, but only about things that directly pertain to routing and code architecture. Kenji believes in being a ligthweight module that only solves the problem it focuses on. Everything else is left up to the user. (ORM, data store, web server, message queue, front-end framework, deployment process, etc.)
+
 
 ### Routing
 
@@ -51,6 +56,14 @@ end
 ````
 
 
+### Data Transport
+
+JSON is used as the singular data transfort for Kenji. Requests are assumed to have:
+
+    Content-Type: application/json; charset=utf-8
+    Accept: application/json; charset=utf-8
+
+
 ## Usage
 
 Getting started with Kenji could not be any easier. All it takes is a few lines and a terminal:
@@ -61,17 +74,8 @@ Getting started with Kenji could not be any easier. All it takes is a few lines 
 
 And already, your app is ready to go:
 
-    $ curl http://localhost:9292/
+    $ curl http://localhost:9292/hello/world
     {"hello":"world"}
-
-
-## Todos
-
-
-- Figure out best format for configuration files. # note: JSON sounds pretty damn good. vijson will make that much friendlier
-- Figure out serving static files.
-- Switch to API-only model, json only.
-- Anything with a TODO comment
 
 
 ## Requirements & Assumptions
