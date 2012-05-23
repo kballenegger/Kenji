@@ -2,8 +2,6 @@ require 'json'
 require 'kenji/controller'
 require 'kenji/string_extensions'
 
-# TODO: rewrite this file!
-
 module Kenji
   class Kenji
 
