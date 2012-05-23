@@ -1,4 +1,4 @@
-*Project is still very much work in progress. This is not production ready!*
+*Project is still actively in development.*
 
 
 # Kenji
