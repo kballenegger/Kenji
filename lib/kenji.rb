@@ -1,261 +1,123 @@
 require 'json'
 require 'kenji/controller'
+require 'kenji/string_extensions'
 
 # TODO: rewrite this file!
 
 module Kenji
   class Kenji
 
-    attr_accessor :controller, :action
     attr_reader :env, :root
 
-    def initialize env, root
+    def initialize(env, root)
       @headers = {
         'Content-Type' => 'application/json'
       }
       @status = 200
-      root = File.expand_path root
-      @root = root + '/'
+      @root = File.expand_path(root) + '/'
       @env = env
-      load? 'lib/hooks'
-      @hook_object = Object.const_get(:Hooks).new if Object.const_defined? :Hooks
-      @hooks = {}
-      load_lib 'string_extensions'
-      hook :after_initialize
-    end
-
-    def header hash
-      hash.each do |key, value|
-        @headers[key] = value
-      end
     end
 
     def call
-
-      out = ''
-      if route # parse the routing
-        
-        # Loading our controller on the fly!
-        if File.exists? "#{@root}controllers/#{@controller}.rb"
-
-          if controller = controller_for(@controller)
-            # Send message, if it supports it. Fall back to :index, or fail.
-            if controller.respond_to? @action.to_sym
-              out = prepare_output(dispatch_action(controller, @action, @params))
-            elsif controller.respond_to? :index
-              out = prepare_output(dispatch_action(controller, 'index', [@action]+@params))
-            else
-              # TODO: Fall back to main controller.
-              error "Could not call controller/action."
-            end
-          else
-            error "Could not load controller."
-          end
-        else
-          error "Could not find appropriate controller."
-        end
-      end
-
-      [@status, @headers, [out]]
-    rescue KenjiResponse => e
-      [@status, @headers, prepare_output([e.response])]
-    rescue KenjiStaticResponse => e
-      [@status, @headers, [e.data]]
-    end
-
-    def load path
-      require @root + path
-    end
-
-    def load? path
-      path += '.rb' unless path =~ /\.rb$/
-      load path if File.exists? @root + path
-    end
-
-    def hook name, &block
-      if block_given?
-        @hooks[name] = block
-      else
-        dispatch_hook name
-      end
-    end
-
-    def controller_for controller
-      # Load the file, if it exists, and its controller object. Assume correct naming.
-      require "#{@root}controllers/#{controller}.rb"
-      controller_class = Object.const_get(controller.to_s.to_camelcase+'Controller')
-      if controller_class.instance_method(:initialize).arity == 1
-        controller = controller_class.new self
-      else
-        controller = controller_class.new
-      end
-      return controller if controller
-    end
-    
-    # Deprecated
-    def input_raw
-      return @raw_input if @raw_input
-      return unless @env
-      @raw_input = @env['rack.input'].read if @env['rack.input']
-    end
-    
-    def input_as_json
-      return @json_input if @json_input
-      require 'json'
-      raw = input_raw
-      begin
-        return @json_input = JSON.parse(raw)
-      rescue JSON::ParserError => e
-        return nil
-      end if raw
-    end
-    
-    # Deprecated
-    def input_as_form
-      return unless raw = input_raw
-      pairs = raw.split('&')
-      require 'uri'
-      pairs.map! do |p|
-        p.split('=').map! { |v| URI.unescape v }
-      end
-      Hash[pairs]
-    end
-    
-    # Responding to the request and rendering
-    
-    def respond code, message, hash={}
-      # TODO: respond w/ status code as well
-      response = {
-        :status => code,
-        :message => message
-      }
-      hash.each { |k,v| response[k]=v }
-      raise KenjiResponse.new(response)
-    end
-    
-    # Private methods
-    private
-    def prepare_output hash={}
-      case @extension
-      when :html
-        # Deprecated
-        return hash[:message]
-      when :json
-        return hash.to_json        
-      end
-    end
-    
-    def route
       path = @env['PATH_INFO']
-
-      # static
+      
+      # deal with static files
+      # TODO: super inefficient, fix
       static = "#{@root}public#{path}"
       if File.file? static
-        # note: super inefficient, fix
         file = File.open(static, 'r')
         data = ""
         while line = file.gets
           data += line
         end
         @headers['Content-Type'] = 'text/html' # TODO: figure this out dynamically
-        raise KenjiStaticResponse.new(data)
-      end
-      
-      segments = path.split '/'
-      segments.shift if segments.first == ''
-      segments.pop if segments.last == ''
-      if segments.last =~ /\.[a-z]+$/
-        last = segments.pop
-        regex = Regexp.new(/^(.+)\.([a-z]+)$/)
-        if matches = regex.match(last)
-          last = matches[1]
-          extension = matches[2]
-        end
-        segments = segments.push last
+        return [@status, @headers, [data]]
       end
 
-      controller = segments[0]
-      action = segments[1].gsub(/^_/, '') unless segments[1].nil?     # don't allow leading _, to allow for "private" public methods
-      params = segments[2..segments.length]
 
-      controller = 'main' unless controller
-      action = 'index' unless action
-      params = [] unless params
-      extension = 'json' unless extension
+      # new routing code
+      segments = path.split('/')
+      segments = segments.drop(1) if segments.first == ''       # discard leading /'s empty segment
 
-      @controller, @action, @params, @extension = controller.to_sym, action.to_sym, params, extension.to_sym
-      return true
-    end
-
-    # Deprecated
-    def buffer *args, &block
-      old_stdout = $stdout
-      $stdout = StringIO.new
-      yield args
-      out = $stdout
-      $stdout = old_stdout
-      out.rewind
-      out.read
-    end
-
-    def dispatch_action controller, action, params
-      return unless controller.respond_to? action.to_sym
-
-      case arity = controller.method(action.to_sym).arity
-      when 0
-        return controller.send action.to_sym
-      when 1
-        return controller.send action.to_sym, self
-      when (2..1.0/0)
-        return controller.send action.to_sym, self, *params[(0..arity-1)]
-      when -1
-        return controller.send action.to_sym, *params
-      when (-1.0/0..-2)
-        return controller.send action.to_sym, self, *params
-      end
-    rescue KenjiResponse => e
-        return e.response
-    rescue EarlyExit => e
-      return # controller exited early, it's all good
-    end
-
-    def dispatch_hook name
-      if block = @hooks[name]
-        if block.arity == 1
-          block.call self
-        else
-          block.call
+      acc = ''; out = {}
+      while head = segments.shift
+        acc = "#{acc}/#{head}"
+        if controller = controller_for(acc)                    # if we have a valid controller 
+          begin
+            out = controller.call(@env['REQUEST_METHOD'].downcase.to_sym, '/'+segments.join('/')).to_json
+          rescue KenjiRespondControlFlowInterrupt => e
+            out = e.response
+          end
+          break
         end
       end
-      if @hook_object && name
-        if @hook_object.method(name).arity == 1
-          @hook_object.send name, self
-        else
-          @hook_object.send name
-        end
+
+      [@status, @headers, [out]]
+    end
+
+
+
+    # Methods for users!
+
+
+    # Sets one or multiple headers, as named arametres. eg.
+    # 
+    #   kenji.header 'Content-Type' => 'hello/world'
+    def header(hash={})
+      hash.each do |key, value|
+        @headers[key] = value
       end
     end
 
-    def error message
-      respond 400, message
+    # Fetch (and cache) the json input to the request
+    # Return a Hash
+    def input_as_json
+      return @json_input if @json_input
+      require 'json'
+      raw = @env['rack.input'].read if @env['rack.input']
+      begin
+        return @json_input = JSON.parse(raw)
+      rescue JSON::ParserError => e
+      end if raw
+      {} # default return value
+    end
+    
+    # Respond to the request
+    def respond code, message, hash={}
+      @status = code
+      response = {            # default structure. TODO: figure out if i really want to keep this 
+        :status => code,
+        :message => message
+      }
+      hash.each { |k,v| response[k]=v }
+      raise KenjiRespondControlFlowInterrupt.new(response.to_json)
     end
 
-    def load_lib name
-      require File.expand_path File.dirname(__FILE__) + '/kenji/' + name
+
+
+    # Private methods
+
+    # Will attempt to fetch the controller, and verify that it is a implements call 
+    def controller_for subpath
+      path = "#{@root}controllers#{subpath}.rb"
+      return nil unless File.exists?(path)
+      require path
+      controller_name = subpath.split('/').last
+      controller_class = Object.const_get(controller_name.to_s.to_camelcase+'Controller')
+      return unless controller_class.method_defined?(:call) && controller_class.instance_method(:call).arity == 2 # ensure protocol compliance
+      controller = controller_class.new
+      controller.kenji = self if controller.respond_to?(:kenji=)
+      return controller if controller
+      nil # default return value
     end
+    
   end
   
-  class EarlyExit < StandardError; end # lets us exit out of a kenji call, like `exit`
-  class KenjiResponse < EarlyExit
+
+  class KenjiRespondControlFlowInterrupt < StandardError
     attr_accessor :response
     def initialize(response)
         @response = response
-    end
-  end # early exit containing a response
-  class KenjiStaticResponse < StandardError
-    attr_accessor :data
-    def initialize(data)
-        @data = data
     end
   end # early exit containing a response
 end
