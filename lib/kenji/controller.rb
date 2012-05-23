@@ -50,7 +50,7 @@ module Kenji
       methods.each do |method|
         node = ((@routes ||= {})[method] ||= {})
         segments = path.split('/')
-        segments = segment.drop(1) if segments.first == ''      # discard leading /'s empty segment
+        segments = segments.drop(1) if segments.first == ''      # discard leading /'s empty segment
         segments.each do |segment|                              # lazily create tree
           segment = ':' if segment =~ /^:/                      # discard :variable name
           node = (node[segment.to_sym] ||= {})
@@ -65,22 +65,21 @@ module Kenji
     # Override to implement your own routing, if you'd like.
     def call(method, path)
       segments = path.split('/')
-      segments = segment.drop(1) if segments.first == ''      # discard leading /'s empty segment
-      node = @routes[method]
+      segments = segments.drop(1) if segments.first == ''      # discard leading /'s empty segment
+      node = self.class.routes[method]
       variables = []
       segments.each do |segment|                              # traverse tree to find 
-        node = node[segment.to_sym] if node[segment.to_sym]   
-        unless node = node[segment.to_sym]                    # attempt to move down to the plain text segment
+        if node[segment.to_sym]
+          node = node[segment.to_sym]                         # attempt to move down to the plain text segment
+        else
           node = node[:':']                                   # attempt to find a variable segment
           variables << segment                                # either we've found a variable, or the `unless` below will trigger
         end
-        unless node                                           # fallback if a valid node cannot be found
-          return fallback if respond_to? :fallback            # and return
-        end
+        break unless node                                     # break if nil, fallback below
       end
-      if action = node[:@action]                              # the block is stored in the @action leaf
+      if node && action = node[:@action]                      # the block is stored in the @action leaf
         return action.call(*variables)
-      else
+      else                                                    # or, fallback if necessary
         if respond_to? :fallback
           if self.instance_method(:fallback).arity == 1
             return fallback(path)
@@ -89,6 +88,16 @@ module Kenji
           end
         end
       end
+    rescue 
+    end
+
+    private
+    # Accessor for @routes
+    def self.routes
+      @routes || {}
     end
   end
+
+  class ControlFlowError < Error; end
 end
+
