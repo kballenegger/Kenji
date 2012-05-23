@@ -24,7 +24,7 @@ Lastly, Kenji is opinionated, but only about things that directly pertain to rou
 
 Kenji wants you to organize your code into logical units of code, aka. controllers. The controllers will automatically be selected based on the url requested, and the rest of the route is defined inline in the controller, with a domain-specific-language.
 
-The canonical Hello World example for the URL `/hello/world` in kenji would look like this, in `controller/hello.rb`:
+The canonical Hello World example for the URL `/hello/world` in Kenji would look like this, in `controller/hello.rb`:
 
 ````ruby
 class HelloController < Kenji::Controller
@@ -58,7 +58,7 @@ end
 
 ### Data Transport
 
-JSON is used as the singular data transfort for Kenji. Requests are assumed to have:
+JSON is used as the singular data transport for Kenji. Requests are assumed to have:
 
     Content-Type: application/json; charset=utf-8
     Accept: application/json; charset=utf-8
