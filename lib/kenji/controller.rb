@@ -88,7 +88,6 @@ module Kenji
           end
         end
       end
-    rescue 
     end
 
     private
@@ -97,7 +96,5 @@ module Kenji
       @routes || {}
     end
   end
-
-  class ControlFlowError < Error; end
 end
 
