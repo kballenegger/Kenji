@@ -1,6 +1,7 @@
 require 'json'
 require 'kenji/controller'
 require 'kenji/string_extensions'
+require 'rack'
 
 module Kenji
   class Kenji
@@ -20,17 +21,8 @@ module Kenji
       path = @env['PATH_INFO']
       
       # deal with static files
-      # TODO: super inefficient, fix
       static = "#{@root}public#{path}"
-      if File.file? static
-        file = File.open(static, 'r')
-        data = ""
-        while line = file.gets
-          data += line
-        end
-        @headers['Content-Type'] = 'text/html' # TODO: figure this out dynamically
-        return [@status, @headers, [data]]
-      end
+      return Rack::File.new("#{@root}public").call(@env) if File.file?(static)
 
 
       # new routing code
