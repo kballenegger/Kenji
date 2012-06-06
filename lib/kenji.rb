@@ -29,7 +29,7 @@ module Kenji
       segments = path.split('/')
       segments = segments.drop(1) if segments.first == ''       # discard leading /'s empty segment
 
-      acc = ''; out = {}
+      acc = ''; out = 'null'
       while head = segments.shift
         acc = "#{acc}/#{head}"
         if controller = controller_for(acc)                    # if we have a valid controller 
