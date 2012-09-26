@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-path = '.' << '/' << (ARGV.first || '.')
+path = File.expand_path('.' << '/' << (ARGV.first || '.'))
 app_name =  File.basename(path)
 
 Dir.mkdir(path) unless File.directory?(path)
