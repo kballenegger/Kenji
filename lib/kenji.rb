@@ -37,6 +37,9 @@ module Kenji
             out = controller.call(@env['REQUEST_METHOD'].downcase.to_sym, '/'+segments.join('/')).to_json
           rescue KenjiRespondControlFlowInterrupt => e
             out = e.response
+          rescue Exception => e
+            p e, e.backtrace                                   # log exceptions
+            raise e
           end
           break
         end
