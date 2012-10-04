@@ -76,24 +76,35 @@ module Kenji
       segments = segments.drop(1) if segments.first == ''     # discard leading /'s empty segment
       node = self.class.routes[method]
       variables = []
+      searching = true
       segments.each do |segment|                              # traverse tree to find 
-        if node[segment.to_sym]
+        if searching && node[segment.to_sym]
           node = node[segment.to_sym]                         # attempt to move down to the plain text segment
-        else
+        elsif searching && node[:':']
           node = node[:':']                                   # attempt to find a variable segment
           variables << segment                                # either we've found a variable, or the `unless` below will trigger
+        else
+          variables << segment                                # dump the remaining segments if we cannot drill down further
+          searching = false
         end
-        break unless node                                     # break if as an instance method nil, fallback below
       end
       if node && action = node[:@action]                      # the block is stored in the @action leaf
-        return action.bind(self).call(*variables)
+        begin
+          return action.bind(self).call(*variables)
+        rescue ArgumentError                                  # assuming argument error means route not defined
+          return attempt_fallback(path)                       # TODO: might want to check arity instead
+        end
       else                                                    # or, fallback if necessary store the block for each method
-        if respond_to? :fallback
-          if self.class.instance_method(:fallback).arity == 1
-            return fallback(path)
-          else
-            return fallback
-          end
+        return attempt_fallback(path)
+      end
+    end
+
+    def attempt_fallback(path)
+      if respond_to? :fallback
+        if self.class.instance_method(:fallback).arity == 1
+          return fallback(path)
+        else
+          return fallback
         end
       end
     end
