@@ -98,11 +98,12 @@ module Kenji
       node = self.class.passes
       remaining_segments = segments.dup
       while s = remaining_segments.shift
-        break unless node[s.to_sym]
+        next unless node[s.to_sym]
         node = node[s.to_sym]
+        break
       end
       if node[:@controller]
-        instance = node[:@controller].new.
+        instance = node[:@controller].new
         return instance.call(method, remaining_segments.join('/'))
       end
 

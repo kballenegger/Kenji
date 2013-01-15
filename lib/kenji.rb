@@ -56,6 +56,7 @@ module Kenji
     # Sets one or multiple headers, as named arametres. eg.
     # 
     #   kenji.header 'Content-Type' => 'hello/world'
+    #
     def header(hash={})
       hash.each do |key, value|
         @headers[key] = value
@@ -70,7 +71,7 @@ module Kenji
       raw = @env['rack.input'].read if @env['rack.input']
       begin
         return @json_input = JSON.parse(raw)
-      rescue JSON::ParserError => e
+      rescue JSON::ParserError
       end if raw
       {} # default return value
     end
