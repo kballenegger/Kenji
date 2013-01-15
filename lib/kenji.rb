@@ -8,6 +8,13 @@ module Kenji
 
     attr_reader :env, :root
 
+    # Setting `kenji.status = 203` will affect the status code of the response.
+    attr_accessor :status
+
+    # Methods for rack!
+
+    # Constructor...
+    #
     def initialize(env, root)
       @headers = {
         'Content-Type' => 'application/json'
@@ -17,6 +24,8 @@ module Kenji
       @env = env
     end
 
+    # This method does all the work!
+    #
     def call
       path = @env['PATH_INFO']
       
@@ -65,6 +74,7 @@ module Kenji
 
     # Fetch (and cache) the json input to the request
     # Return a Hash
+    #
     def input_as_json
       return @json_input if @json_input
       require 'json'
@@ -77,7 +87,8 @@ module Kenji
     end
     
     # Respond to the request
-    def respond code, message, hash={}
+    #
+    def respond(code, message, hash={})
       @status = code
       response = {            # default structure. TODO: figure out if i really want to keep this 
         :status => code,
@@ -90,8 +101,10 @@ module Kenji
 
 
     # Private methods
+    private
 
     # Will attempt to fetch the controller, and verify that it is a implements call 
+    #
     def controller_for subpath
       path = "#{@root}controllers#{subpath}.rb"
       return nil unless File.exists?(path)
