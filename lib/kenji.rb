@@ -48,7 +48,8 @@ module Kenji
           rescue KenjiRespondControlFlowInterrupt => e
             out = e.response
           rescue Exception => e
-            p e, e.backtrace                                   # log exceptions
+            p e                                                # log exceptions
+            e.backtrace.each {|b| puts "  #{b}" }
             raise e
           end
           break
