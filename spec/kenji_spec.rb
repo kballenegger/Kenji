@@ -1,8 +1,9 @@
 
 require 'rack'
 require 'rack/test'
-require File.expand_path(File.dirname(__FILE__)+'/../lib/kenji.rb')
 require 'rspec'
+
+require 'kenji'
 
 
 # NOTE: these tests make use of the controllers defined in test/controllers.
