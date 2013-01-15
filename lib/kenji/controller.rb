@@ -108,7 +108,7 @@ module Kenji
       end
 
       # regular routing
-      node = self.class.routes[method]
+      node = self.class.routes[method] || {}
       variables = []
       searching = true
       segments.each do |segment|                              # traverse tree to find 
