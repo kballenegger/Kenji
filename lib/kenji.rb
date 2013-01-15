@@ -37,6 +37,7 @@ module Kenji
       # new routing code
       segments = path.split('/')
       segments = segments.drop(1) if segments.first == ''       # discard leading /'s empty segment
+      segments.unshift('')
 
       acc = ''; out = 'null'
       while head = segments.shift
@@ -105,7 +106,8 @@ module Kenji
 
     # Will attempt to fetch the controller, and verify that it is a implements call 
     #
-    def controller_for subpath
+    def controller_for(subpath)
+      subpath = '/_' if subpath == '/'
       path = "#{@root}controllers#{subpath}.rb"
       return nil unless File.exists?(path)
       require path
