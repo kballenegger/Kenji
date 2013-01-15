@@ -111,7 +111,7 @@ module Kenji
       path = "#{@root}controllers#{subpath}.rb"
       return nil unless File.exists?(path)
       require path
-      controller_name = subpath.split('/').last
+      controller_name = subpath.split('/').last.sub(/^_/, 'Root')
       controller_class = Object.const_get(controller_name.to_s.to_camelcase+'Controller')
       return unless controller_class.method_defined?(:call) && controller_class.instance_method(:call).arity == 2 # ensure protocol compliance
       controller = controller_class.new
