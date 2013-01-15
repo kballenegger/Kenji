@@ -2,6 +2,7 @@
 require 'rack'
 require 'rack/test'
 require 'rspec'
+require 'rspec/mocks'
 
 require 'kenji'
 
@@ -9,57 +10,80 @@ require 'kenji'
 # NOTE: these tests make use of the controllers defined in test/controllers.
 
 def app_for(path)
-    lambda do |env|
-      Kenji::Kenji.new(env, File.dirname(__FILE__)+'/'+path).call
-    end
+  lambda do |env|
+    kenji = Kenji::Kenji.new(env, File.dirname(__FILE__)+'/'+path)
+    kenji.stderr = double(puts: nil)
+    kenji.call
+  end
 end
 
-describe Kenji do
-
+describe Kenji::Kenji, 'expected reponses' do
   include Rack::Test::Methods
-  def app; app_for('1'); end
+
+  context '1' do
+    def app; app_for('1'); end
 
 
-  it 'should return "null" for unknown routes' do
-    get '/sdlkjhb'
-    last_response.body.should == 'null'
-  end
+    it 'should return 404 for unknown routes (no controller)' do
+      get '/sdlkjhb'
+      expected_response = {status: 404, message: 'Not found!'}.to_json
+      last_response.body.should == expected_response
+      last_response.status.should == 404
+    end
 
-  it 'should route a GET call to a defined get call' do
-    get '/main/hello'
-    expected_response = {status: 200, hello: :world}.to_json
-    last_response.body.should == expected_response
-  end
+    it 'should return 404 for unknown routes (no route on valid controller)' do
+      get '/main/sdlkjhb'
+      expected_response = {status: 404, message: 'Not found!'}.to_json
+      last_response.body.should == expected_response
+      last_response.status.should == 404
+    end
 
-  [:post, :put, :delete].each do |method|
+    it 'should return 500 for exceptions' do
+      get '/main/crasher'
+      expected_response = {status: 500, message: 'Something went wrong...'}.to_json
+      last_response.body.should == expected_response
+      last_response.status.should == 500
+    end
 
-    it "should route a #{method.to_s.upcase} to a defined #{method.to_s} call" do
-      send(method, '/main')
-      expected_response = {status: 1337}.to_json
+    it 'should route a GET call to a defined get call' do
+      get '/main/hello'
+      expected_response = {status: 200, hello: :world}.to_json
       last_response.body.should == expected_response
     end
+
+    [:post, :put, :delete].each do |method|
+
+      it "should route a #{method.to_s.upcase} to a defined #{method.to_s} call" do
+        send(method, '/main')
+        expected_response = {status: 1337}.to_json
+        last_response.body.should == expected_response
+      end
+    end
+
+    it 'should return "null" for unsupported methods' do
+      post '/main/hello'
+      expected_response = {status: 404, message: 'Not found!'}.to_json
+      last_response.status.should == 404
+      last_response.body.should == expected_response
+    end
+
   end
 
-  it 'should return "null" for unsupported methods' do
-    post '/main/hello'
-    last_response.body.should == 'null'
+  context '2' do
+    def app; app_for('2'); end
+
+    it 'should use root controller' do
+      get '/'
+      expected_response = {status: 200, controller_used: :root}.to_json
+      last_response.body.should == expected_response
+    end
+
+    it 'should pass routing down to child controllers' do
+      get '/child/foo'
+      expected_response = {status: 200, foo: :bar}.to_json
+      last_response.body.should == expected_response
+    end
+
   end
 
-end
-
-describe Kenji do
-  include Rack::Test::Methods
-  def app; app_for('2'); end
-
-  it 'should use root controller' do
-    get '/'
-    expected_response = {status: 200, controller_used: :root}.to_json
-    last_response.body.should == expected_response
-  end
-
-  it 'should pass routing down to child controllers' do
-    get '/child/foo'
-    expected_response = {status: 200, foo: :bar}.to_json
-    last_response.body.should == expected_response
-  end
 end

@@ -10,6 +10,9 @@ module Kenji
 
     # Setting `kenji.status = 203` will affect the status code of the response.
     attr_accessor :status
+    # Exceptions will be printed here, and controllers are expected to log to
+    # this IO buffer:
+    attr_accessor :stderr
 
     # Methods for rack!
 
@@ -21,6 +24,7 @@ module Kenji
       }
       @status = 200
       @root = File.expand_path(root) + '/'
+      @stderr = $stderr
       @env = env
     end
 
@@ -39,7 +43,7 @@ module Kenji
       segments = segments.drop(1) if segments.first == ''       # discard leading /'s empty segment
       segments.unshift('')
 
-      acc = ''; out = 'null'
+      acc = ''; out = '', success = false
       while head = segments.shift
         acc = "#{acc}/#{head}"
         if controller = controller_for(acc)                     # if we have a valid controller 
@@ -50,15 +54,28 @@ module Kenji
           rescue KenjiRespondControlFlowInterrupt => e
             out = e.response
           end
+          success = true
           break
         end
       end
+      
+      return response_404 unless success
 
       [@status, @headers, [out]]
     rescue Exception => e
-      p e                                                       # log exceptions
-      e.backtrace.each {|b| puts "  #{b}" }
+      @stderr.puts e.inspect                                    # log exceptions
+      e.backtrace.each {|b| @stderr.puts "  #{b}" }
+      response_500
+    end
+
+    # 500 error
+    def response_500
       [500, @headers, [{status: 500, message: 'Something went wrong...'}.to_json]]
+    end
+
+    # 404 error
+    def response_404
+      [404, @headers, [{status: 404, message: 'Not found!'}.to_json]]
     end
 
 
