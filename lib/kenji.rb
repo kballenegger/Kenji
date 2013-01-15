@@ -42,21 +42,23 @@ module Kenji
       acc = ''; out = 'null'
       while head = segments.shift
         acc = "#{acc}/#{head}"
-        if controller = controller_for(acc)                    # if we have a valid controller 
+        if controller = controller_for(acc)                     # if we have a valid controller 
           begin
-            out = controller.call(@env['REQUEST_METHOD'].downcase.to_sym, '/'+segments.join('/')).to_json
+            method = @env['REQUEST_METHOD'].downcase.to_sym
+            subpath = '/'+segments.join('/')
+            out = controller.call(method, subpath).to_json
           rescue KenjiRespondControlFlowInterrupt => e
             out = e.response
-          rescue Exception => e
-            p e                                                # log exceptions
-            e.backtrace.each {|b| puts "  #{b}" }
-            raise e
           end
           break
         end
       end
 
       [@status, @headers, [out]]
+    rescue Exception => e
+      p e                                                       # log exceptions
+      e.backtrace.each {|b| puts "  #{b}" }
+      [500, @headers, [{status: 500, message: 'Something went wrong...'}.to_json]]
     end
 
 
