@@ -140,6 +140,8 @@ module Kenji
         else
           return fallback
         end
+      else
+        kenji.respond(404, 'Not found!')
       end
     end
 
