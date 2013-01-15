@@ -30,6 +30,20 @@ describe Kenji do
     last_response.body.should == expected_response
   end
 
+  [:post, :put, :delete].each do |method|
+
+    it "should route a #{method.to_s.upcase} to a defined #{method.to_s} call" do
+      send(method, '/main')
+      expected_response = {status: 1337}.to_json
+      last_response.body.should == expected_response
+    end
+  end
+
+  it 'should return "null" for unsupported methods' do
+    post '/main/hello'
+    last_response.body.should == 'null'
+  end
+
 end
 
 describe Kenji do
