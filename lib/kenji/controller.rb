@@ -68,12 +68,45 @@ module Kenji
       nil # void method
     end
 
+    # This lets us pass the routing down to another controller for a sub-path.
+    #
+    #   class MyController < Kenji::Controller
+    #     pass '/admin/*', AdminController
+    #     # regular routes
+    #   end
+    #
+    def self.pass(path, controller)
+      node = (@passes ||= {})
+      segments = path.split('/')
+      segments = segments.drop(1) if segments.first == ''     # discard leading /'s empty segment
+      segments.each do |segment|
+        node = (node[segment.to_sym] ||= {})
+        break if segment == '*'
+      end
+      node[:@controller] = controller
+    end
+
     
     # Most likely only used by Kenji itself.
     # Override to implement your own routing, if you'd like.
+    #
     def call(method, path)
       segments = path.split('/')
       segments = segments.drop(1) if segments.first == ''     # discard leading /'s empty segment
+
+      # check for passes
+      node = self.class.passes
+      remaining_segments = segments.dup
+      while s = remaining_segments.shift
+        break unless node[s.to_sym]
+        node = node[s.to_sym]
+      end
+      if node[:@controller]
+        instance = node[:@controller].new.
+        return instance.call(method, remaining_segments.join('/'))
+      end
+
+      # regular routing
       node = self.class.routes[method]
       variables = []
       searching = true
@@ -113,6 +146,9 @@ module Kenji
     # Accessor for @routes
     def self.routes
       @routes || {}
+    end
+    def self.passes
+      @passes || {}
     end
   end
 end
