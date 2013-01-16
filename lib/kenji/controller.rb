@@ -123,6 +123,7 @@ module Kenji
       end
       if node[:@controller]
         instance = node[:@controller].new
+        instance.kenji = kenji if instance.respond_to?(:kenji=)
         return instance.call(method, remaining_segments.join('/'))
       end
 
