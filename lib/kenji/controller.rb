@@ -86,11 +86,27 @@ module Kenji
       node[:@controller] = controller
     end
 
+
+    # This lets you define before blocks.
+    #
+    #   class MyController < Kenji::Controller
+    #     before do
+    #       # eg. ensure authentication, you can use kenji.respond in here.
+    #     end
+    #   end
+    #   
+    def self.before(&block)
+      (@befores ||= []) << block
+    end
+
     
     # Most likely only used by Kenji itself.
     # Override to implement your own routing, if you'd like.
     #
     def call(method, path)
+
+      befores.each {|b| b.call }
+
       segments = path.split('/')
       segments = segments.drop(1) if segments.first == ''     # discard leading /'s empty segment
 
@@ -152,6 +168,9 @@ module Kenji
     end
     def self.passes
       @passes || {}
+    end
+    def self.befores
+      @befores || []
     end
   end
 end

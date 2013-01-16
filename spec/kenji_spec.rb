@@ -86,4 +86,16 @@ describe Kenji::Kenji, 'expected reponses' do
 
   end
 
+  context '3' do
+    def app; app_for('3'); end
+
+    it 'should call before block' do
+      get '/main/hello'
+      expected_response = {status: 302, message: 'redirect...'}.to_json
+      last_response.body.should == expected_response
+      last_response.status.should == 302
+    end
+
+  end
+
 end
