@@ -96,6 +96,9 @@ module Kenji
     #   end
     #   
     def self.before(&block)
+      define_method(:_tmp_before_action, &block)
+      block = instance_method(:_tmp_before_action)
+      remove_method(:_tmp_before_action)
       (@befores ||= []) << block
     end
 
@@ -105,7 +108,7 @@ module Kenji
     #
     def call(method, path)
 
-      befores.each {|b| b.call }
+      self.class.befores.each {|b| b.bind(self).call }
 
       segments = path.split('/')
       segments = segments.drop(1) if segments.first == ''     # discard leading /'s empty segment
