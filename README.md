@@ -1,6 +1,3 @@
-*Project is still actively in development.*
-
-
 # Kenji
 
 Kenji is a lightweight backend framework for Ruby.
