@@ -133,7 +133,7 @@ module Kenji
         :message => message
       }
       hash.each { |k,v| response[k]=v }
-      throw(:KenjiRespondControlFlowInterrupt [@status, @headers, [response.to_json]])
+      throw(:KenjiRespondControlFlowInterrupt, [@status, @headers, [response.to_json]])
     end
 
 
