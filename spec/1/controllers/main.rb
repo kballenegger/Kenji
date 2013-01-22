@@ -20,4 +20,9 @@ class MainController < Kenji::Controller
   delete '/' do
     {status:1337}
   end
+
+  get '/respond' do
+    kenji.respond(123, 'hello')
+    raise # never called
+  end
 end

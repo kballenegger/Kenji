@@ -63,8 +63,15 @@ describe Kenji::Kenji, 'expected reponses' do
     it 'should return "null" for unsupported methods' do
       post '/main/hello'
       expected_response = {status: 404, message: 'Not found!'}.to_json
-      last_response.status.should == 404
       last_response.body.should == expected_response
+      last_response.status.should == 404
+    end
+
+    it 'should use throw / catch to respond immediately with kenji.respond' do
+      get '/main/respond'
+      expected_response = {status: 123, message: 'hello'}.to_json
+      last_response.body.should == expected_response
+      last_response.status.should == 123
     end
 
   end
