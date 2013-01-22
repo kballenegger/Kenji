@@ -77,5 +77,27 @@ And already, your app is ready to go:
 
 ## Requirements & Assumptions
 
-- Requires rubygems and bundler.
+- Requires RubyGems and Bundler.
+- Requires Rack
 - Requires Ruby 1.9.
+
+
+## Changelog
+
+#### 0.6.5
+
+- Automatically handle CORS / Access-Control.
+- Use throw / catch instead of raise / rescue for control flow.
+
+#### Before TODO: figure out when
+
+- `before` command.
+- specs
+- passing 
+
+## Still to do
+
+- The auto-generated project template should be updated.
+- The controller naming convention should not contain a 'Controller' suffix.
+- Route multiple URLs for the same route?
+
