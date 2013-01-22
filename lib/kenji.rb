@@ -18,7 +18,17 @@ module Kenji
 
     # Constructor...
     #
-    def initialize(env, root)
+    # `env` should be the environment hash provided by Rack.
+    #
+    # `root` is the root directory (as output by File.expand_path) of the Kenji
+    # directory structure.
+    #
+    # `options` is an options hash that accepts the following keys:
+    #
+    #   - :auto_cors => true | false    # automatically deal with
+    #                                     CORS / Access-Control
+    #
+    def initialize(env, root, options = {})
       @headers = {
         'Content-Type' => 'application/json'
       }
@@ -26,11 +36,18 @@ module Kenji
       @root = File.expand_path(root) + '/'
       @stderr = $stderr
       @env = env
+      
+      @options = {
+        auto_cors: true
+      }.merge(options)
     end
 
     # This method does all the work!
     #
     def call
+
+      auto_cors if @options[:auto_cors]
+
       catch(:KenjiRespondControlFlowInterrupt) do
         path = @env['PATH_INFO']
 
@@ -123,6 +140,22 @@ module Kenji
 
     # Private methods
     private
+
+    # Deals with silly HTTP CORS Access-Control restrictions by automatically
+    # allowing all requests.
+    #
+    def auto_cors
+      origin = env['HTTP_ORIGIN']
+      header 'Access-Control-Allow-Origin' => origin if origin
+
+      if env['REQUEST_METHOD'] == 'OPTIONS'
+        header 'Access-Control-Allow-Methods' => 'OPTIONS, GET, POST, PUT, DELETE'
+
+        if requested_headers = env['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']
+          header 'Access-Control-Allow-Headers' => requested_headers
+        end
+      end
+    end
 
     # Will attempt to fetch the controller, and verify that it is a implements call 
     #
