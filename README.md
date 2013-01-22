@@ -23,17 +23,17 @@ Kenji wants you to organize your code into logical units of code, aka. controlle
 
 The canonical Hello World example for the URL `/hello/world` in Kenji would look like this, in `controller/hello.rb`:
 
-````ruby
+```ruby
 class HelloController < Kenji::Controller
     get '/world' do
         {hello: :world}
     end
 end
-````
+```
 
 A more representative example might be:
 
-````ruby
+```ruby
 class UserController < Kenji::Controller
 
     # ...
@@ -50,7 +50,7 @@ class UserController < Kenji::Controller
         # delete connection from user id to friend_id
     end
 end
-````
+```
 
 
 ### Data Transport
