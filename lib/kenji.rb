@@ -31,37 +31,37 @@ module Kenji
     # This method does all the work!
     #
     def call
-      path = @env['PATH_INFO']
-      
-      # deal with static files
-      static = "#{@root}public#{path}"
-      return Rack::File.new("#{@root}public").call(@env) if File.file?(static)
+      catch(:KenjiRespondControlFlowInterrupt) do
+        path = @env['PATH_INFO']
+
+        # deal with static files
+        static = "#{@root}public#{path}"
+        return Rack::File.new("#{@root}public").call(@env) if File.file?(static)
 
 
-      # new routing code
-      segments = path.split('/')
-      segments = segments.drop(1) if segments.first == ''       # discard leading /'s empty segment
-      segments.unshift('')
+        # new routing code
+        segments = path.split('/')
+        segments = segments.drop(1) if segments.first == ''       # discard leading /'s empty segment
+        segments.unshift('')
 
-      acc = ''; out = '', success = false
-      while head = segments.shift
-        acc = "#{acc}/#{head}"
-        if controller = controller_for(acc)                     # if we have a valid controller 
-          begin
-            method = @env['REQUEST_METHOD'].downcase.to_sym
-            subpath = '/'+segments.join('/')
-            out = controller.call(method, subpath).to_json
-          rescue KenjiRespondControlFlowInterrupt => e
-            out = e.response
+        acc = ''; out = '', success = false
+        while head = segments.shift
+          acc = "#{acc}/#{head}"
+          if controller = controller_for(acc)                     # if we have a valid controller 
+            begin
+              method = @env['REQUEST_METHOD'].downcase.to_sym
+              subpath = '/'+segments.join('/')
+              out = controller.call(method, subpath).to_json
+            end
+            success = true
+            break
           end
-          success = true
-          break
         end
-      end
-      
-      return response_404 unless success
 
-      [@status, @headers, [out]]
+        return response_404 unless success
+
+        [@status, @headers, [out]]
+      end
     rescue Exception => e
       @stderr.puts e.inspect                                    # log exceptions
       e.backtrace.each {|b| @stderr.puts "  #{b}" }
@@ -116,7 +116,7 @@ module Kenji
         :message => message
       }
       hash.each { |k,v| response[k]=v }
-      raise KenjiRespondControlFlowInterrupt.new(response.to_json)
+      throw(:KenjiRespondControlFlowInterrupt [@status, @headers, [response.to_json]])
     end
 
 
@@ -142,12 +142,5 @@ module Kenji
     
   end
   
-
-  class KenjiRespondControlFlowInterrupt < StandardError
-    attr_accessor :response
-    def initialize(response)
-        @response = response
-    end
-  end # early exit containing a response
 end
 
