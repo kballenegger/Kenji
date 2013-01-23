@@ -154,6 +154,7 @@ module Kenji
         if requested_headers = env['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']
           header 'Access-Control-Allow-Headers' => requested_headers
         end
+        respond(200, 'CORS is allowed.')
       end
     end
 
