@@ -74,6 +74,21 @@ describe Kenji::Kenji, 'expected reponses' do
       last_response.status.should == 123
     end
 
+    it 'should automatically allow CORS for simple requests' do
+      header 'Origin', 'foo'
+      get '/main/hello'
+      last_response.header['Access-Control-Allow-Origin'].should == 'foo'
+    end
+
+    it 'should automatically allow CORS for complex requests' do
+      header 'Origin', 'foo'
+      header 'Access-Control-Request-Headers', 'Bar'
+      options '/main/hello'
+      last_response.header['Access-Control-Allow-Origin'].should == 'foo'
+      last_response.header['Access-Control-Allow-Methods'].should == 'OPTIONS, GET, POST, PUT, DELETE'
+      last_response.header['Access-Control-Allow-Headers'].should == 'Bar'
+    end
+
   end
 
   context '2' do
