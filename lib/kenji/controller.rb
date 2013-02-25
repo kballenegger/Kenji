@@ -165,6 +165,13 @@ module Kenji
       end
     end
 
+
+    # Utility method: this can be used to log to stderr cleanly.
+    #
+    def log(*args)
+      kenji.stderr.puts(*args)
+    end
+
     private
     # Accessor for @routes
     def self.routes
