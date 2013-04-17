@@ -107,6 +107,9 @@ module Kenji
     # Override to implement your own routing, if you'd like.
     #
     def call(method, path)
+
+      self.class.befores.each {|b| b.bind(self).call }
+
       segments = path.split('/')
       segments = segments.drop(1) if segments.first == ''     # discard leading /'s empty segment
 
@@ -141,7 +144,6 @@ module Kenji
         end
       end
       if node && action = node[:@action]                      # the block is stored in the @action leaf
-        self.class.befores.each {|b| b.bind(self).call }
         begin
           return action.bind(self).call(*variables)
         rescue ArgumentError                                  # assuming argument error means route not defined
