@@ -1,10 +1,6 @@
+source 'https://rubygems.org'
+
+# Specify your gem's dependencies in factory_baby.gemspec
+gemspec
+
 gem 'inifile'
-gem 'json'
-gem 'rack'
-
-group :test do
-  gem 'rspec'
-  gem 'rack-test'
-end
-
-source :rubygems
