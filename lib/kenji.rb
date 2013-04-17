@@ -110,6 +110,12 @@ module Kenji
       end
     end
 
+    # Returns the response headers
+    #
+    def response_headers
+      @headers
+    end
+
     # Fetch (and cache) the json input to the request
     # Return a Hash
     #
