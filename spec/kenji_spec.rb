@@ -117,7 +117,45 @@ describe Kenji::Kenji, 'expected reponses' do
       last_response.body.should == expected_response
       last_response.status.should == 302
     end
+  end
 
+  context '4' do
+    def app; app_for('4'); end
+
+    it "should use main controller" do
+      get '/main'
+      expected_response = { :foo => 'bar' }.to_json
+      last_response.body.should == expected_response
+      last_response.status.should == 200
+    end
+
+    it "should use pass controller and use get endpoint" do
+      get '/main/foo/foo_id/pass'
+      expected_response = { :foo_id => 'foo_id' }.to_json
+      last_response.body.should == expected_response
+      last_response.status.should == 200
+    end
+
+    it "should use pass controller and use put endpoint" do
+      put '/main/foo/foo_id/pass/pass_id'
+      expected_response = { :pass_id => 'pass_id', :foo_id => 'foo_id' }.to_json
+      last_response.body.should == expected_response
+      last_response.status.should == 200
+    end
+
+    it "should use pass controller and use get endpoint" do
+      get '/main/foo/foo_id/bar'
+      expected_response = { :foo_id => 'foo_id' }.to_json
+      last_response.body.should == expected_response
+      last_response.status.should == 200
+    end
+
+    it "should use pass controller and use put endpoint" do
+      put '/main/foo/foo_id/bar/bar_id'
+      expected_response = { :bar_id => 'bar_id', :foo_id => 'foo_id' }.to_json
+      last_response.body.should == expected_response
+      last_response.status.should == 200
+    end
   end
 
 end

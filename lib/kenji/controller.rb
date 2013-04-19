@@ -4,14 +4,14 @@ module Kenji
 
     # use the reader freely to grab the kenji object
     attr_accessor :kenji
-  
+
     # Routes below will accept routes in the format, eg.:
     #     /hello/:id/children
     # Can contain any number of :id, but must be in their own url segment.
     # Colon-prefixed segments become variables, passed onto the given block as arguments.
-    # The name given to the variable is irrelevant, and is thrown away: /hello/:/children is equivalent to the example above. 
+    # The name given to the variable is irrelevant, and is thrown away: /hello/:/children is equivalent to the example above.
     # Given block must have correct arity.
-    
+
     # Route GET
     def self.get(path, &block)
       route(:get, path, &block)
@@ -48,7 +48,7 @@ module Kenji
     #
     # Note: this works by building a tree for the path,
     # each node being a path segment or variable segment, and the leaf @action being the block
-    
+
     def self.route(*methods, path, &block)
       # bind the block to self as an instance method, so its context is correct
       define_method(:_tmp_route_action, &block)
@@ -94,7 +94,7 @@ module Kenji
     #       # eg. ensure authentication, you can use kenji.respond in here.
     #     end
     #   end
-    #   
+    #
     def self.before(&block)
       define_method(:_tmp_before_action, &block)
       block = instance_method(:_tmp_before_action)
@@ -102,7 +102,7 @@ module Kenji
       (@befores ||= []) << block
     end
 
-    
+
     # Most likely only used by Kenji itself.
     # Override to implement your own routing, if you'd like.
     #
@@ -116,22 +116,23 @@ module Kenji
       # check for passes
       node = self.class.passes
       remaining_segments = segments.dup
-      while s = remaining_segments.shift
-        next unless node[s.to_sym]
-        node = node[s.to_sym]
-        break
-      end
-      if node[:@controller]
-        instance = node[:@controller].new
+
+      f = fetch_passes(node, remaining_segments)
+
+      if f[:match] && f[:controller]
+        instance = f[:controller].new
         instance.kenji = kenji if instance.respond_to?(:kenji=)
-        return instance.call(method, remaining_segments.join('/'))
+        f[:variables].each do |k, v|
+          instance.instance_variable_set(:"@#{k}", v)
+        end
+        return instance.call(method, f[:remaining_segments].join('/'))
       end
 
       # regular routing
       node = self.class.routes[method] || {}
       variables = []
       searching = true
-      segments.each do |segment|                              # traverse tree to find 
+      segments.each do |segment|                              # traverse tree to find
         if searching && node[segment.to_sym]
           node = node[segment.to_sym]                         # attempt to move down to the plain text segment
         elsif searching && node[:':']
@@ -182,6 +183,28 @@ module Kenji
     end
     def self.befores
       @befores || []
+    end
+
+    def fetch_passes(node, segments)
+      variables = {}
+      match = false
+
+      while e = segments.shift
+        # return false unless node
+        key = node.keys.first
+        if match = key.to_s.match(/^\:(\w+)/)
+          node = node[key.to_sym]
+          variables[match[1].to_sym] = e
+          match = true
+        else
+          match = node.has_key?(e.to_sym)
+          node = node[e.to_sym] if match
+        end
+
+        break if node[:@controller]
+      end
+
+      { :match => match, :variables => variables, :controller => node[:@controller], :remaining_segments => segments }
     end
   end
 end
