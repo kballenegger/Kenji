@@ -82,7 +82,7 @@ Getting started with Kenji could not be any easier. All it takes is a few lines
 and a terminal:
 
     $ gem install kenji         # (once kenji is on the rubygems main source)
-    $ kenji-init app_name; cd app_name
+    $ kenji init app_name; cd app_name
     $ rackup                    # launch the webserver
 
 And already, your app is ready to go:
@@ -94,11 +94,17 @@ And already, your app is ready to go:
 ## Requirements & Assumptions
 
 - Requires RubyGems and Bundler.
-- Requires Rack
-- Requires Ruby 1.9.
+- Requires Rack ~> 1.5.3.
+- Requires Ruby >= 1.9.3.
 
 
 ## Changelog
+
+#### 0.7
+
+- Pass can now contain variables, that get set as @ivars on the controller.
+  Thanks @nicotaing.
+- Accessors for `response_headers`
 
 #### 0.6.5
 
