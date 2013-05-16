@@ -1,6 +1,14 @@
 #!/usr/bin/env ruby
 
-path = File.expand_path('.' << '/' << (ARGV.first || '.'))
+
+unless ARGV.first == 'init'
+  puts 'Usage: kenji init [project-name]'
+  Process.exit
+end
+
+puts 'Initializing a new Kenji project... :)'
+
+path = File.expand_path('.' << '/' << (ARGV[1] || '.'))
 app_name =  File.basename(path)
 
 Dir.mkdir(path) unless File.directory?(path)
