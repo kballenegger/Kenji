@@ -27,6 +27,11 @@ module Kenji
     #
     #   - :auto_cors => true | false    # automatically deal with
     #                                     CORS / Access-Control
+    #   - :root_controller => Object    # when set, Kenji will not attempt to
+    #                                     discover controllers based on
+    #                                     convention, but rather will always
+    #                                     use this controller. use `pass` to
+    #                                     build a controller hierarchy
     #
     def initialize(env, root, options = {})
       @headers = {
@@ -38,7 +43,8 @@ module Kenji
       @env = env
       
       @options = {
-        auto_cors: true
+        auto_cors: true,
+        root_controller: nil
       }.merge(options)
     end
 
@@ -57,21 +63,28 @@ module Kenji
 
 
         # new routing code
-        segments = path.split('/')
-        segments = segments.drop(1) if segments.first == ''       # discard leading /'s empty segment
-        segments.unshift('')
+        method = @env['REQUEST_METHOD'].downcase.to_sym
 
-        acc = ''; out = '', success = false
-        while head = segments.shift
-          acc = "#{acc}/#{head}"
-          if controller = controller_for(acc)                     # if we have a valid controller 
-            begin
-              method = @env['REQUEST_METHOD'].downcase.to_sym
-              subpath = '/'+segments.join('/')
-              out = controller.call(method, subpath).to_json
+        segments = path.split('/')
+        segments = segments.unshift('') unless segments.first == ''    # ensure existence of leading /'s empty segment
+
+        if @options[:root_controller]
+          controller = controller_instance(@options[:root_controller])
+          subpath = segments.join('/')
+          out = controller.call(method, subpath).to_json
+          success = true
+        else
+          acc = ''; out = '', success = false
+          while head = segments.shift
+            acc = "#{acc}/#{head}"
+            if controller = controller_for(acc)                   # if we have a valid controller 
+              begin
+                subpath = '/'+segments.join('/')
+                out = controller.call(method, subpath).to_json
+              end
+              success = true
+              break
             end
-            success = true
-            break
           end
         end
 
@@ -163,7 +176,8 @@ module Kenji
       end
     end
 
-    # Will attempt to fetch the controller, and verify that it is a implements call 
+    # Will attempt to fetch the controller, and verify that it is a implements
+    # call.
     #
     def controller_for(subpath)
       subpath = '/_' if subpath == '/'
@@ -172,7 +186,15 @@ module Kenji
       require path
       controller_name = subpath.split('/').last.sub(/^_/, 'Root')
       controller_class = Object.const_get(controller_name.to_s.to_camelcase+'Controller')
-      return unless controller_class.method_defined?(:call) && controller_class.instance_method(:call).arity == 2 # ensure protocol compliance
+      controller_instance(controller_class)
+    end
+
+    # Attempts to instantiate the controller class, set up as a Kenji
+    # controller.
+    #
+    def controller_instance(controller_class)
+      # ensure protocol compliance
+      return unless controller_class.method_defined?(:call) && controller_class.instance_method(:call).arity == 2
       controller = controller_class.new
       controller.kenji = self if controller.respond_to?(:kenji=)
       return controller if controller

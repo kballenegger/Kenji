@@ -9,9 +9,9 @@ require 'kenji'
 
 # NOTE: these tests make use of the controllers defined in test/controllers.
 
-def app_for(path)
+def app_for(path, opts={})
   lambda do |env|
-    kenji = Kenji::Kenji.new(env, File.dirname(__FILE__)+'/'+path)
+    kenji = Kenji::Kenji.new(env, File.dirname(__FILE__)+'/'+path, opts)
     kenji.stderr = double(puts: nil)
     kenji.call
   end
@@ -155,6 +155,33 @@ describe Kenji::Kenji, 'expected reponses' do
       expected_response = { :bar_id => 'bar_id', :foo_id => 'foo_id' }.to_json
       last_response.body.should == expected_response
       last_response.status.should == 200
+    end
+  end
+
+  context '5' do
+    before do
+      require File.expand_path('./5/controllers/main.rb', File.dirname(__FILE__))
+    end
+
+    def app; app_for('5', root_controller: Spec5::MainController); end
+
+    it "should use main controller for /" do
+      get '/'
+      expected_response = { :foo => 'bar' }.to_json
+      last_response.body.should == expected_response
+      last_response.status.should == 200
+    end
+
+    it "should use main controller for /path" do
+      get '/path'
+      expected_response = { :baz => 'bar' }.to_json
+      last_response.body.should == expected_response
+      last_response.status.should == 200
+    end
+
+    it "should 404 on main controller" do
+      put '/main/foo/foo_id/pass/pass_id'
+      last_response.status.should == 404
     end
   end
 
