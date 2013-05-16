@@ -137,8 +137,7 @@ module Kenji
       response = {            # default structure. TODO: figure out if i really want to keep this 
         :status => code,
         :message => message
-      }
-      hash.each { |k,v| response[k]=v }
+      }.merge(hash)
       throw(:KenjiRespondControlFlowInterrupt, [@status, @headers, [response.to_json]])
     end
 
