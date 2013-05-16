@@ -5,23 +5,37 @@ Kenji is a lightweight backend framework for Ruby.
 
 ## Rationale
 
-Kenji believes that a traditional web application should be divided into two parts: an client application running in the browser (HTML/JS/CSS), and a backend API with which it communicates. Kenji is the backend side of the equation, while the front-end architecture is left up to the user. (Popular options are [backbone][] and [spine][].)
+Kenji believes that a traditional web application should be divided into two
+parts: an client application running in the browser (HTML/JS/CSS), and
+a backend API with which it communicates. Kenji is the backend side of the
+equation, while the front-end architecture is left up to the user. (Popular
+options are [backbone][] and [spine][].)
 
 [backbone]: http://documentcloud.github.com/backbone/
 [spine]: http://spinejs.com/
 
-Kenji believes that in order to keep clean and organized code, routes should be defined inline with their code.
+Kenji believes that in order to keep clean and organized code, routes should be
+defined inline with their code.
 
-Kenji believes that an app should be usable as a library from scripts or from the command line. An app should be automatable and testable.
+Kenji believes that an app should be usable as a library from scripts or from
+the command line. An app should be automatable and testable.
 
-Lastly, Kenji is opinionated, but only about things that directly pertain to routing and code architecture. Kenji believes in being a ligthweight module that only solves the problem it focuses on. Everything else is left up to the user. (ORM, data store, web server, message queue, front-end framework, deployment process, etc.)
+Lastly, Kenji is opinionated, but only about things that directly pertain to
+routing and code architecture. Kenji believes in being a ligthweight module
+that only solves the problem it focuses on. Everything else is left up to the
+user. (ORM, data store, web server, message queue, front-end framework,
+deployment process, etc.)
 
 
 ### Routing
 
-Kenji wants you to organize your code into logical units of code, aka. controllers. The controllers will automatically be selected based on the url requested, and the rest of the route is defined inline in the controller, with a domain-specific-language.
+Kenji wants you to organize your code into logical units of code, aka.
+controllers. The controllers will automatically be selected based on the url
+requested, and the rest of the route is defined inline in the controller, with
+a domain-specific-language.
 
-The canonical Hello World example for the URL `/hello/world` in Kenji would look like this, in `controller/hello.rb`:
+The canonical Hello World example for the URL `/hello/world` in Kenji would
+look like this, in `controller/hello.rb`:
 
 ```ruby
 class HelloController < Kenji::Controller
@@ -55,7 +69,8 @@ end
 
 ### Data Transport
 
-JSON is used as the singular data transport for Kenji. Requests are assumed to have:
+JSON is used as the singular data transport for Kenji. Requests are assumed to
+have:
 
     Content-Type: application/json; charset=utf-8
     Accept: application/json; charset=utf-8
@@ -63,7 +78,8 @@ JSON is used as the singular data transport for Kenji. Requests are assumed to h
 
 ## Usage
 
-Getting started with Kenji could not be any easier. All it takes is a few lines and a terminal:
+Getting started with Kenji could not be any easier. All it takes is a few lines
+and a terminal:
 
     $ gem install kenji         # (once kenji is on the rubygems main source)
     $ kenji-init app_name; cd app_name
