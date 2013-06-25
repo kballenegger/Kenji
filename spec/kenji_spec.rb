@@ -186,5 +186,6 @@ describe Kenji::Kenji, 'expected reponses' do
   end
   
   # TODO: Write unit tests for :catch_exceptions option.
+  # TODO: Write unit tests for Kenji::App
 
 end
