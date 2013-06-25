@@ -81,7 +81,7 @@ have:
 Getting started with Kenji could not be any easier. All it takes is a few lines
 and a terminal:
 
-    $ gem install kenji         # (once kenji is on the rubygems main source)
+    $ gem install kenji
     $ kenji init app_name; cd app_name
     $ rackup                    # launch the webserver
 
@@ -99,6 +99,16 @@ And already, your app is ready to go:
 
 
 ## Changelog
+
+#### 0.8
+
+- Kenji::App is a simply wrapper that can and should be used in `config.ru`
+  files. It avoids the need to wrap the Kenji initialization in a lambda.
+- The new option `catch_exceptions` (default true) configures whether Kenji
+  will automatically rescue and log exceptions.
+- The root path argument to initializing Kenji is now deprecated, and replaced
+  with the `directory` named option. It is only necessary to set this when not
+  using a `root_controller`.
 
 #### 0.7
 
