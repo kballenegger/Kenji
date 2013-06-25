@@ -20,36 +20,46 @@ module Kenji
     #
     # `env` should be the environment hash provided by Rack.
     #
-    # `root` is the root directory (as output by File.expand_path) of the Kenji
-    # directory structure.
+    # *deprecated* `root` is the root directory (as output by File.expand_path)
+    # of the Kenji directory structure. This is deprecated, please use the
+    # :directory option below.
     #
     # `options` is an options hash that accepts the following keys:
     #
-    #   - :auto_cors => true | false    # automatically deal with
-    #                                     CORS / Access-Control
-    #   - :root_controller => Object    # when set, Kenji will not attempt to
-    #                                     discover controllers based on
-    #                                     convention, but rather will always
-    #                                     use this controller. use `pass` to
-    #                                     build a controller hierarchy
-    #   - :catch_exceptions => bool     # when true, Kenji will catch
-    #                                     exceptions, print them in stderr, and
-    #                                     and return a standard 500 error
+    #   :auto_cors => true | false
     #
-    def initialize(env, root, options = {})
+    #     automatically deal with CORS / Access-Control
+    #
+    #   :root_controller => Object
+    #
+    #     when set, Kenji will not attempt to discover controllers based on
+    #     convention, but rather will always use this controller. use `pass` to
+    #     build a controller hierarchy
+    #
+    #   :catch_exceptions => true | false
+    #
+    #     when true, Kenji will catch exceptions, print them in stderr, and and
+    #     return a standard 500 error
+    #
+    def initialize(env, root = nil, options = {})
       @headers = {
         'Content-Type' => 'application/json'
       }
       @status = 200
-      @root = File.expand_path(root) + '/'
       @stderr = $stderr
       @env = env
+
+      # deal with legacy root argument behavior
+      options[:directory] = File.expand_path(root) if root
       
       @options = {
         auto_cors: true,
         catch_exceptions: true,
-        root_controller: nil
+        root_controller: nil,
+        directory: Dir.getwd
       }.merge(options)
+
+      @root = @options[:directory] + '/'
     end
 
     # This method does all the work!

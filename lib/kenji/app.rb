@@ -5,13 +5,16 @@ module Kenji
   # in a lambda typically necessary for using Kenji as a Rack app. Instead,
   # simply do the following:
   #
-  #   app Kenji::App.new(File.dirname(__FILE__))
+  #   app Kenji::App.new(directory: Dir.getwd)
   #
   # Any options passed will also be forwarded to Kenji.
   #
+  # Kenji::App has one instance for the app, unlike Kenji::Kenji which has one
+  # instance per request.
+  #
   class App
 
-    def initialize(path, opts={})
+    def initialize(path=nil, opts={})
       @path = path
       @opts = opts
     end

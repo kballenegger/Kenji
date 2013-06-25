@@ -187,5 +187,6 @@ describe Kenji::Kenji, 'expected reponses' do
   
   # TODO: Write unit tests for :catch_exceptions option.
   # TODO: Write unit tests for Kenji::App
+  # TODO: Write unit tests for new root directory behavior.
 
 end
