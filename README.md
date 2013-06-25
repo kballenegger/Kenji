@@ -100,7 +100,7 @@ And already, your app is ready to go:
 
 ## Changelog
 
-#### 0.8
+#### 1.1
 
 - Kenji::App is a simply wrapper that can and should be used in `config.ru`
   files. It avoids the need to wrap the Kenji initialization in a lambda.
@@ -110,6 +110,10 @@ And already, your app is ready to go:
 - The root path argument to initializing Kenji is now deprecated, and replaced
   with the `directory` named option. It is only necessary to set this when not
   using a `root_controller`.
+
+#### 1.0
+
+- ? TODO: fill me in
 
 #### 0.7
 
