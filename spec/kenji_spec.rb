@@ -184,5 +184,7 @@ describe Kenji::Kenji, 'expected reponses' do
       last_response.status.should == 404
     end
   end
+  
+  # TODO: Write unit tests for :catch_exceptions option.
 
 end

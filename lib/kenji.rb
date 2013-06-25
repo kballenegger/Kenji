@@ -32,6 +32,9 @@ module Kenji
     #                                     convention, but rather will always
     #                                     use this controller. use `pass` to
     #                                     build a controller hierarchy
+    #   - :catch_exceptions => bool     # when true, Kenji will catch
+    #                                     exceptions, print them in stderr, and
+    #                                     and return a standard 500 error
     #
     def initialize(env, root, options = {})
       @headers = {
@@ -44,6 +47,7 @@ module Kenji
       
       @options = {
         auto_cors: true,
+        catch_exceptions: true,
         root_controller: nil
       }.merge(options)
     end
@@ -78,10 +82,8 @@ module Kenji
           while head = segments.shift
             acc = "#{acc}/#{head}"
             if controller = controller_for(acc)                   # if we have a valid controller 
-              begin
-                subpath = '/'+segments.join('/')
-                out = controller.call(method, subpath).to_json
-              end
+              subpath = '/'+segments.join('/')
+              out = controller.call(method, subpath).to_json
               success = true
               break
             end
@@ -93,6 +95,7 @@ module Kenji
         [@status, @headers, [out]]
       end
     rescue Exception => e
+      raise e unless @options[:catch_exceptions]
       @stderr.puts e.inspect                                    # log exceptions
       e.backtrace.each {|b| @stderr.puts "  #{b}" }
       response_500
