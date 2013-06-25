@@ -5,7 +5,7 @@ module Kenji
   # in a lambda typically necessary for using Kenji as a Rack app. Instead,
   # simply do the following:
   #
-  #   app Kenji::App.new(directory: Dir.getwd)
+  #   run Kenji::App.new(directory: Dir.getwd)
   #
   # Any options passed will also be forwarded to Kenji.
   #
