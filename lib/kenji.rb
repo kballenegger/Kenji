@@ -49,12 +49,16 @@ module Kenji
     #     when true, Kenji will catch exceptions, print them in stderr, and and
     #     return a standard 500 error
     #
+    #   :stderr => IO
+    #
+    #     an IO stread, this is where Kenji logging goes by default. defaults
+    #     to $stderr
+    #
     def initialize(env, root = nil, options = {})
       @headers = {
         'Content-Type' => 'application/json'
       }
       @status = 200
-      @stderr = $stderr
       @env = env
 
       # deal with legacy root argument behavior
@@ -64,9 +68,11 @@ module Kenji
         auto_cors: true,
         catch_exceptions: true,
         root_controller: nil,
-        directory: Dir.getwd
+        directory: Dir.getwd,
+        stderr: $stderr
       }.merge(options)
 
+      @stderr = @options[:stderr]
       @root = @options[:directory] + '/'
     end
 

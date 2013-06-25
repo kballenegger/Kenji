@@ -104,6 +104,7 @@ And already, your app is ready to go:
 
 - Kenji::App is a simply wrapper that can and should be used in `config.ru`
   files. It avoids the need to wrap the Kenji initialization in a lambda.
+- Kenji's stderr is now configurable as an option.
 - The new option `catch_exceptions` (default true) configures whether Kenji
   will automatically rescue and log exceptions.
 - The root path argument to initializing Kenji is now deprecated, and replaced
