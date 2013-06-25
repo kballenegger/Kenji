@@ -1,5 +1,6 @@
 require 'json'
 require 'kenji/controller'
+require 'kenji/app'
 require 'kenji/string_extensions'
 require 'rack'
 
