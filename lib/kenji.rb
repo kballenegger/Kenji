@@ -30,6 +30,14 @@ module Kenji
     #
     #     automatically deal with CORS / Access-Control
     #
+    #   :directory => String (path)
+    #     
+    #     this is the preferred way of setting the root directory, when
+    #     necessary. you should either set a root directory (which defaults to
+    #     the current working directory), or set a root_controller. both are
+    #     not necessary, as the directory is only used for auto-discovering
+    #     controllers.
+    #
     #   :root_controller => Object
     #
     #     when set, Kenji will not attempt to discover controllers based on
