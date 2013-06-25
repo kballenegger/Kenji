@@ -6,11 +6,14 @@ module Kenji
     attr_accessor :kenji
 
     # Routes below will accept routes in the format, eg.:
+    # 
     #     /hello/:id/children
+    #
     # Can contain any number of :id, but must be in their own url segment.
-    # Colon-prefixed segments become variables, passed onto the given block as arguments.
-    # The name given to the variable is irrelevant, and is thrown away: /hello/:/children is equivalent to the example above.
-    # Given block must have correct arity.
+    # Colon-prefixed segments become variables, passed onto the given block as
+    # arguments. The name given to the variable is irrelevant, and is thrown
+    # away: /hello/:/children is equivalent to the example above. Given block
+    # must have correct arity.
 
     # Route GET
     def self.get(path, &block)
@@ -46,9 +49,9 @@ module Kenji
 
     # Route a given path to the correct block, for any given methods
     #
-    # Note: this works by building a tree for the path,
-    # each node being a path segment or variable segment, and the leaf @action being the block
-
+    # Note: this works by building a tree for the path, each node being a path
+    # segment or variable segment, and the leaf @action being the block
+    #
     def self.route(*methods, path, &block)
       # bind the block to self as an instance method, so its context is correct
       define_method(:_tmp_route_action, &block)
