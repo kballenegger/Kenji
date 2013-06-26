@@ -20,7 +20,7 @@ module Kenji
     end
 
     def call(env)
-      Kenji::Kenji.new(env, @path, @opts).call
+      Kenji.new(env, @path, @opts).call
     end
   end
 end
