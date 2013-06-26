@@ -14,13 +14,12 @@ module Kenji
   #
   class App
 
-    def initialize(path=nil, opts={})
-      @path = path
+    def initialize(opts={})
       @opts = opts
     end
 
     def call(env)
-      Kenji.new(env, @path, @opts).call
+      Kenji.new(env, @opts).call
     end
   end
 end
