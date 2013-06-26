@@ -73,7 +73,7 @@ module Kenji
         auto_cors: true,
         catch_exceptions: true,
         root_controller: nil,
-        directory: Dir.getwd,
+        directory: File.expand_path(Dir.getwd),
         stderr: $stderr
       }.merge(options)
 
