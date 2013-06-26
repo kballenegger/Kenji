@@ -55,7 +55,11 @@ module Kenji
     #     an IO stread, this is where Kenji logging goes by default. defaults
     #     to $stderr
     #
-    def initialize(env, root = nil, options = {})
+    def initialize(env, *rest)
+      raise ArgumentError unless rest.count == 2 || rest.count == 1
+      root, options = *rest
+      options, root = root, options if root.is_a?(Hash)
+
       @headers = {
         'Content-Type' => 'application/json'
       }
