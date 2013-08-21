@@ -142,17 +142,10 @@ module Kenji
           node = node[:':']                                   # attempt to find a variable segment
           variables << segment                                # either we've found a variable, or the `unless` below will trigger
         else
-          # variables << segment                                # dump the remaining segments if we cannot drill down further
-          # searching = false
-          return attempt_fallback(path)
+          return attempt_fallback(path)                       # route failed to match variable or segment node so attempt fallback
         end
       end
       if node && action = node[:@action]                      # the block is stored in the @action leaf
-        # begin
-          # return action.bind(self).call(*variables)
-        # rescue ArgumentError                                  # assuming argument error means route not defined
-          # return attempt_fallback(path)                       # TODO: might want to check arity instead
-        # end
         return action.bind(self).call(*variables)
       else                                                    # or, fallback if necessary store the block for each method
         return attempt_fallback(path)
@@ -202,7 +195,7 @@ module Kenji
           variables[match[1].to_sym] = e
           match = true
         else
-        # what happens if there is not a match at this segment but there is at the next?
+          # if there is no match it should not pass
           break unless match = node.has_key?(e.to_sym)
           node = node[e.to_sym]
         end
