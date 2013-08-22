@@ -17,7 +17,7 @@ def app_for(path, opts={})
   end
 end
 
-describe Kenji::Kenji, 'expected reponses' do
+describe Kenji::Kenji, 'expected responses' do
   include Rack::Test::Methods
 
   context '1' do
@@ -106,6 +106,10 @@ describe Kenji::Kenji, 'expected reponses' do
       last_response.body.should == expected_response
     end
 
+    it 'should not match subsets of the route' do
+      get 'something/child/foo'
+      last_response.status.should == 404
+    end
   end
 
   context '3' do
@@ -182,6 +186,23 @@ describe Kenji::Kenji, 'expected reponses' do
     it "should 404 on main controller" do
       put '/main/foo/foo_id/pass/pass_id'
       last_response.status.should == 404
+    end
+
+    it "should pass variables to blocks" do
+      get "/foobar/foo_id/bar_id"
+      expected_response = { :foo => "foo_id", :bar => "bar_id" }.to_json
+      last_response.body.should == expected_response
+      last_response.status.should == 200
+    end
+
+    it "should throw ArgumentError when there are too many arguments" do
+      get "foo/foo_id/bar_id"
+      last_response.status.should == 500
+    end
+
+    it "should throw ArgumentError when there are too few arguments" do
+      get "bar/foo_id/bar_id"
+      last_response.status.should == 500
     end
   end
   
