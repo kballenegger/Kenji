@@ -27,10 +27,6 @@ module Kenji
     #
     # `options` is an options hash that accepts the following keys:
     #
-    #   :auto_cors => true | false
-    #
-    #     automatically deal with CORS / Access-Control
-    #
     #   :directory => String (path)
     #     
     #     this is the preferred way of setting the root directory, when
@@ -71,7 +67,6 @@ module Kenji
       options[:directory] = File.expand_path(root) if root
       
       @options = {
-        auto_cors: true,
         catch_exceptions: true,
         root_controller: nil,
         directory: File.expand_path(Dir.getwd),
@@ -85,8 +80,6 @@ module Kenji
     # This method does all the work!
     #
     def call
-
-      auto_cors if @options[:auto_cors]
 
       catch(:KenjiRespondControlFlowInterrupt) do
         path = @env['PATH_INFO']
@@ -191,23 +184,6 @@ module Kenji
 
     # Private methods
     private
-
-    # Deals with silly HTTP CORS Access-Control restrictions by automatically
-    # allowing all requests.
-    #
-    def auto_cors
-      origin = env['HTTP_ORIGIN']
-      header 'Access-Control-Allow-Origin' => origin if origin
-
-      if env['REQUEST_METHOD'] == 'OPTIONS'
-        header 'Access-Control-Allow-Methods' => 'OPTIONS, GET, POST, PUT, DELETE'
-
-        if requested_headers = env['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']
-          header 'Access-Control-Allow-Headers' => requested_headers
-        end
-        respond(200, 'CORS is allowed.')
-      end
-    end
 
     # Will attempt to fetch the controller, and verify that it is a implements
     # call.
