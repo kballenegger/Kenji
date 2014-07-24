@@ -40,8 +40,6 @@ module Kenji
       route(:patch, path, &block)
     end
 
-    # TODO: figure out whether I want OPTIONS, HEAD
-
     # Route all methods for given path
     def self.all(path, &block)
       route(:get, :post, :put, :delete, path, &block)

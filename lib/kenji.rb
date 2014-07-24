@@ -170,7 +170,7 @@ module Kenji
     #
     def respond(code, message, hash={})
       @status = code
-      response = {            # default structure. TODO: figure out if i really want to keep this 
+      response = {            # default structure.
         :status => code,
         :message => message
       }.merge(hash)
