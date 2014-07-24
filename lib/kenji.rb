@@ -227,7 +227,10 @@ module Kenji
     #
     def controller_instance(controller_class)
       # ensure protocol compliance
-      return unless controller_class.method_defined?(:call) && controller_class.instance_method(:call).arity == 2
+      unless (controller_class.method_defined?(:call) &&
+              controller_class.instance_method(:call).arity == 2)
+        return
+      end
       controller = controller_class.new
       controller.kenji = self if controller.respond_to?(:kenji=)
       return controller if controller
