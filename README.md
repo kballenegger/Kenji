@@ -102,6 +102,8 @@ And already, your app is ready to go:
 
 #### 1.1.2
 
+- The `respond_raw` method allows responding with raw data, instead of the
+  default which serializes the response as a JSON object.
 - Supports PATCH requests natively.
 
 #### 1.1.1
