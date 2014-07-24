@@ -31,7 +31,7 @@ class MainController < Kenji::Controller
   end
 
   get '/respond-raw' do
-    kenji.respond_raw(123, 'hello raw')
+    kenji.respond_raw('hello raw')
     raise # never called
   end
 

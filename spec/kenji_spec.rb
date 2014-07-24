@@ -78,7 +78,7 @@ describe Kenji::Kenji, 'expected responses' do
       get '/main/respond-raw'
       expected_response = 'hello raw'
       last_response.body.should == expected_response
-      last_response.status.should == 123
+      last_response.status.should == 200
     end
 
     it 'should use respond immediately with kenji.respond_raw is passed an IO' do
