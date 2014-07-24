@@ -29,4 +29,14 @@ class MainController < Kenji::Controller
     kenji.respond(123, 'hello')
     raise # never called
   end
+
+  get '/respond-raw' do
+    kenji.respond_raw(123, 'hello raw')
+    raise # never called
+  end
+
+  get '/respond-io' do
+    kenji.respond_raw(123, StringIO.new('hello io'))
+    raise # never called
+  end
 end

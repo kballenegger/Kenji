@@ -171,12 +171,21 @@ module Kenji
     def respond(code, message, hash={})
       @status = code
       response = {            # default structure.
-        :status => code,
-        :message => message
+        status: code,
+        message: message,
       }.merge(hash)
       throw(:KenjiRespondControlFlowInterrupt, [@status, @headers, [response.to_json]])
     end
 
+    # Respond with raw bytes
+    #
+    # `data` can either be a string or an IO object.
+    #
+    def respond_raw(status = 200, data)
+      @status = status
+      body = data.is_a?(IO) ? data : [data]
+      throw(:KenjiRespondControlFlowInterrupt, [@status, @headers, data])
+    end
 
 
     # Private methods
