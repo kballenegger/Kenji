@@ -100,12 +100,16 @@ And already, your app is ready to go:
 
 ## Changelog
 
+#### 1.1.2
+
+- Supports PATCH requests natively.
+
 #### 1.1.1
 
-- No longer catching ArgumentErrors when calling the block for a route.  This
+- No longer catching ArgumentErrors when calling the block for a route. This
   fixes a bug where Kenji incorrectly responds with a 404 when the block is
   passed the wrong number of arguments.
-- Fixed logic for matching a pass.  the path now must match the pass exactly
+- Fixed logic for matching a pass. the path now must match the pass exactly
   whereas before the pass would match if any subset of the path matched the
   pass.
 
