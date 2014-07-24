@@ -21,6 +21,10 @@ class MainController < Kenji::Controller
     {status:1337}
   end
 
+  patch '/' do
+    {status:1337}
+  end
+
   get '/respond' do
     kenji.respond(123, 'hello')
     raise # never called

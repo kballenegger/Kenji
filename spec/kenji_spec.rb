@@ -51,7 +51,7 @@ describe Kenji::Kenji, 'expected responses' do
       last_response.body.should == expected_response
     end
 
-    [:post, :put, :delete].each do |method|
+    [:post, :put, :delete, :patch].each do |method|
 
       it "should route a #{method.to_s.upcase} to a defined #{method.to_s} call" do
         send(method, '/main')
