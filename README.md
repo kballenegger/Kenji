@@ -106,6 +106,8 @@ And already, your app is ready to go:
   automatically, use a middleware like [Rack::Cors][rack-cors] which does
   a better job than the barebones implementation in Kenji does.
 
+[rack-cors]: https://github.com/cyu/rack-cors
+
 #### 1.1.1
 
 - No longer catching ArgumentErrors when calling the block for a route.  This
