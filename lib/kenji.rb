@@ -131,16 +131,6 @@ module Kenji
       response_500
     end
 
-    # 500 error
-    def response_500
-      [500, @headers, [{status: 500, message: 'Something went wrong...'}.to_json]]
-    end
-
-    # 404 error
-    def response_404
-      [404, @headers, [{status: 404, message: 'Not found!'}.to_json]]
-    end
-
 
 
     # Methods for users!
@@ -191,6 +181,16 @@ module Kenji
 
     # Private methods
     private
+
+    # 500 error
+    def response_500
+      [500, @headers, [{status: 500, message: 'Something went wrong...'}.to_json]]
+    end
+
+    # 404 error
+    def response_404
+      [404, @headers, [{status: 404, message: 'Not found!'}.to_json]]
+    end
 
     # Deals with silly HTTP CORS Access-Control restrictions by automatically
     # allowing all requests.
