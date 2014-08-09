@@ -27,10 +27,6 @@ module Kenji
     #
     # `options` is an options hash that accepts the following keys:
     #
-    #   :auto_cors => true | false
-    #
-    #     automatically deal with CORS / Access-Control
-    #
     #   :directory => String (path)
     #     
     #     this is the preferred way of setting the root directory, when
@@ -71,7 +67,6 @@ module Kenji
       options[:directory] = File.expand_path(root) if root
       
       @options = {
-        auto_cors: true,
         catch_exceptions: true,
         root_controller: nil,
         directory: File.expand_path(Dir.getwd),
@@ -86,8 +81,6 @@ module Kenji
     #
     def call
 
-      auto_cors if @options[:auto_cors]
-
       catch(:KenjiRespondControlFlowInterrupt) do
         path = @env['PATH_INFO']
 
@@ -100,7 +93,8 @@ module Kenji
         method = @env['REQUEST_METHOD'].downcase.to_sym
 
         segments = path.split('/')
-        segments = segments.unshift('') unless segments.first == ''    # ensure existence of leading /'s empty segment
+        # ensure existence of leading /'s empty segment
+        segments = segments.unshift('') unless segments.first == ''
 
         if @options[:root_controller]
           controller = controller_instance(@options[:root_controller])
@@ -111,7 +105,8 @@ module Kenji
           acc = ''; out = '', success = false
           while head = segments.shift
             acc = "#{acc}/#{head}"
-            if controller = controller_for(acc)                   # if we have a valid controller 
+            # if we have a valid controller 
+            if controller = controller_for(acc)
               subpath = '/'+segments.join('/')
               out = controller.call(method, subpath).to_json
               success = true
@@ -126,7 +121,8 @@ module Kenji
       end
     rescue Exception => e
       raise e unless @options[:catch_exceptions]
-      @stderr.puts e.inspect                                    # log exceptions
+      # log exceptions
+      @stderr.puts e.inspect
       e.backtrace.each {|b| @stderr.puts "  #{b}" }
       response_500
     end
@@ -199,23 +195,6 @@ module Kenji
     # 404 error
     def response_404
       [404, @headers, [{status: 404, message: 'Not found!'}.to_json]]
-    end
-
-    # Deals with silly HTTP CORS Access-Control restrictions by automatically
-    # allowing all requests.
-    #
-    def auto_cors
-      origin = env['HTTP_ORIGIN']
-      header 'Access-Control-Allow-Origin' => origin if origin
-
-      if env['REQUEST_METHOD'] == 'OPTIONS'
-        header 'Access-Control-Allow-Methods' => 'OPTIONS, GET, POST, PUT, DELETE'
-
-        if requested_headers = env['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']
-          header 'Access-Control-Allow-Headers' => requested_headers
-        end
-        respond(200, 'CORS is allowed.')
-      end
     end
 
     # Will attempt to fetch the controller, and verify that it is a implements

@@ -105,6 +105,11 @@ And already, your app is ready to go:
 - The `respond_raw` method allows responding with raw data, instead of the
   default which serializes the response as a JSON object.
 - Supports PATCH requests natively.
+- Remove support for `auto_cors`. Instead of having Kenji implement it
+  automatically, use a middleware like [Rack::Cors][rack-cors] which does
+  a better job than the barebones implementation in Kenji does.
+
+[rack-cors]: https://github.com/cyu/rack-cors
 
 #### 1.1.1
 
