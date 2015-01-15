@@ -182,7 +182,7 @@ module Kenji
     def respond_raw(status = 200, data)
       @status = status
       body = data.is_a?(IO) ? data : [data]
-      throw(:KenjiRespondControlFlowInterrupt, [@status, @headers, data])
+      throw(:KenjiRespondControlFlowInterrupt, [@status, @headers, body])
     end
 
 
