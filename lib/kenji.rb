@@ -1,8 +1,10 @@
 require 'json'
 require 'kenji/controller'
 require 'kenji/app'
-require 'kenji/string_extensions'
+require 'kenji/string-extensions'
 require 'rack'
+
+using Kenji::StringExtensions
 
 module Kenji
   class Kenji
