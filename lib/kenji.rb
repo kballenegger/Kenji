@@ -30,7 +30,7 @@ module Kenji
     # `options` is an options hash that accepts the following keys:
     #
     #   :directory => String (path)
-    #     
+    #
     #     this is the preferred way of setting the root directory, when
     #     necessary. you should either set a root directory (which defaults to
     #     the current working directory), or set a root_controller. both are
@@ -67,16 +67,16 @@ module Kenji
 
       # deal with legacy root argument behavior
       options[:directory] = File.expand_path(root) if root
-      
+
       @options = {
         catch_exceptions: true,
-        root_controller: nil,
-        directory: File.expand_path(Dir.getwd),
-        stderr: $stderr
+        root_controller:  nil,
+        directory:        File.expand_path(Dir.getwd),
+        stderr:           $stderr
       }.merge(options)
 
       @stderr = @options[:stderr]
-      @root = @options[:directory] + '/'
+      @root   = @options[:directory] + '/'
     end
 
     # This method does all the work!
@@ -100,9 +100,9 @@ module Kenji
 
         if @options[:root_controller]
           controller = controller_instance(@options[:root_controller])
-          subpath = segments.join('/')
-          out = controller.call(method, subpath).to_json
-          success = true
+          subpath    = segments.join('/')
+          out        = controller.call(method, subpath).to_json
+          success    = true
         else
           acc = ''; out = '', success = false
           while head = segments.shift
@@ -135,7 +135,7 @@ module Kenji
 
 
     # Sets one or multiple headers, as named arametres. eg.
-    # 
+    #
     #   kenji.header 'Content-Type' => 'hello/world'
     #
     def header(hash={})
@@ -163,13 +163,13 @@ module Kenji
       end if raw
       {} # default return value
     end
-    
+
     # Respond to the request
     #
     def respond(code, message, hash={})
       @status = code
       response = {            # default structure.
-        status: code,
+        status:  code,
         message: message,
       }.merge(hash)
       throw(:KenjiRespondControlFlowInterrupt, [@status, @headers, [response.to_json]])
@@ -226,8 +226,7 @@ module Kenji
       return controller if controller
       nil # default return value
     end
-    
+
   end
-  
 end
 

@@ -6,7 +6,7 @@ module Kenji
     attr_accessor :kenji
 
     # Routes below will accept routes in the format, eg.:
-    # 
+    #
     #     /hello/:id/children
     #
     # Can contain any number of :id, but must be in their own url segment.
@@ -206,7 +206,12 @@ module Kenji
         break if node[:@controller]
       end
 
-      { :match => match, :variables => variables, :controller => node[:@controller], :remaining_segments => segments }
+      {
+        match:              match,
+        variables:          variables,
+        controller:         node[:@controller],
+        remaining_segments: segments,
+      }
     end
   end
 end
