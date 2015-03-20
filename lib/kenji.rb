@@ -129,10 +129,7 @@ module Kenji
       response_500(e)
     end
 
-
-
     # Methods for users!
-
 
     # Sets one or multiple headers, as named arametres. eg.
     #
@@ -181,7 +178,13 @@ module Kenji
     #
     def respond_raw(status = 200, data)
       @status = status
-      body = data.is_a?(IO) ? data : [data]
+
+      body = if data.is_a?(StringIO) || data.kind_of?(IO)
+               data.string
+             else
+               [data]
+             end
+
       throw(:KenjiRespondControlFlowInterrupt, [@status, @headers, body])
     end
 

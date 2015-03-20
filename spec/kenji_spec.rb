@@ -1,11 +1,9 @@
-
 require 'rack'
 require 'rack/test'
 require 'rspec'
 require 'rspec/mocks'
 
 require 'kenji'
-
 
 # NOTE: these tests make use of the controllers defined in test/controllers.
 
@@ -22,7 +20,6 @@ describe Kenji::Kenji, 'expected responses' do
 
   context '1' do
     def app; app_for('1'); end
-
 
     it 'should return 404 for unknown routes (no controller)' do
       get '/sdlkjhb'
@@ -53,7 +50,6 @@ describe Kenji::Kenji, 'expected responses' do
     end
 
     [:post, :put, :delete, :patch].each do |method|
-
       it "should route a #{method.to_s.upcase} to a defined #{method.to_s} call" do
         send(method, '/main')
         expected_response = {status: 1337}.to_json
@@ -88,7 +84,6 @@ describe Kenji::Kenji, 'expected responses' do
       last_response.body.should == expected_response
       last_response.status.should == 123
     end
-
   end
 
   context '2' do
@@ -209,5 +204,4 @@ describe Kenji::Kenji, 'expected responses' do
   # TODO: Write unit tests for :catch_exceptions option.
   # TODO: Write unit tests for Kenji::App
   # TODO: Write unit tests for new root directory behavior.
-
 end
