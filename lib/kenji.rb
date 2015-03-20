@@ -107,7 +107,7 @@ module Kenji
           acc = ''; out = '', success = false
           while head = segments.shift
             acc = "#{acc}/#{head}"
-            # if we have a valid controller 
+            # if we have a valid controller
             if controller = controller_for(acc)
               subpath = '/'+segments.join('/')
               out = controller.call(method, subpath).to_json
@@ -126,7 +126,7 @@ module Kenji
       # log exceptions
       @stderr.puts e.inspect
       e.backtrace.each {|b| @stderr.puts "  #{b}" }
-      response_500
+      response_500(e)
     end
 
 
@@ -190,8 +190,14 @@ module Kenji
     private
 
     # 500 error
-    def response_500
-      [500, @headers, [{status: 500, message: 'Something went wrong...'}.to_json]]
+    def response_500(exception = nil)
+      message = if exception.nil?
+                  "Something went wrong..."
+                else
+                  "Something went wrong: #{exception}"
+                end
+
+      [500, @headers, [{status: 500, message: message}.to_json]]
     end
 
     # 404 error

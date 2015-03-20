@@ -40,7 +40,8 @@ describe Kenji::Kenji, 'expected responses' do
 
     it 'should return 500 for exceptions' do
       get '/main/crasher'
-      expected_response = {status: 500, message: 'Something went wrong...'}.to_json
+      expected_response = {status: 500,
+                           message: 'Something went wrong: kaboom!'}.to_json
       last_response.body.should == expected_response
       last_response.status.should == 500
     end
@@ -204,7 +205,7 @@ describe Kenji::Kenji, 'expected responses' do
       last_response.status.should == 500
     end
   end
-  
+
   # TODO: Write unit tests for :catch_exceptions option.
   # TODO: Write unit tests for Kenji::App
   # TODO: Write unit tests for new root directory behavior.

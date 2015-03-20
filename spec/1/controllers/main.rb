@@ -6,7 +6,7 @@ class MainController < Kenji::Controller
   end
 
   get '/crasher' do
-    raise
+    raise 'kaboom!'
   end
 
   post '/' do
