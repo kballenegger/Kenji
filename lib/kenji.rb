@@ -48,11 +48,16 @@ module Kenji
     #     when true, Kenji will catch exceptions, print them in stderr, and and
     #     return a standard 500 error
     #
+    #   :exception_in_body => true | false
+    #
+    #     if :catch_exceptions => true, return exception message in response
+    #
     #   :stderr => IO
     #
     #     an IO stread, this is where Kenji logging goes by default. defaults
     #     to $stderr
     #
+
     def initialize(env, *rest)
       raise ArgumentError unless rest.count == 2 || rest.count == 1
       root, options = *rest
@@ -194,10 +199,10 @@ module Kenji
 
     # 500 error
     def response_500(exception = nil)
-      message = if exception.nil?
+      message = if exception.nil? || !@options[:exception_in_body]
                   "Something went wrong..."
                 else
-                  "Something went wrong: #{exception}"
+                  exception.to_s
                 end
 
       [500, @headers, [{status: 500, message: message}.to_json]]

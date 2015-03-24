@@ -5,10 +5,6 @@ class MainController < Kenji::Controller
     {status: 200, hello: :world}
   end
 
-  get '/crasher' do
-    raise 'kaboom!'
-  end
-
   post '/' do
     {status:1337}
   end

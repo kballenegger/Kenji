@@ -35,14 +35,6 @@ describe Kenji::Kenji, 'expected responses' do
       last_response.status.should == 404
     end
 
-    it 'should return 500 for exceptions' do
-      get '/main/crasher'
-      expected_response = {status: 500,
-                           message: 'Something went wrong: kaboom!'}.to_json
-      last_response.body.should == expected_response
-      last_response.status.should == 500
-    end
-
     it 'should route a GET call to a defined get call' do
       get '/main/hello'
       expected_response = {status: 200, hello: :world}.to_json
@@ -201,7 +193,57 @@ describe Kenji::Kenji, 'expected responses' do
     end
   end
 
-  # TODO: Write unit tests for :catch_exceptions option.
+  context '7' do
+    context 'catch_exceptions is false' do
+      def app
+        app_for('7',
+                catch_exceptions: false)
+
+        it 'should raise' do
+          -> { get '/main/crasher' }.must_raise
+        end
+      end
+    end
+
+    context 'catch_exceptions is true' do
+      context :exception_in_body do
+        context 'exception_in_body is false' do
+          def app
+            app_for('7',
+                    catch_exceptions:  true,
+                    exception_in_body: false)
+          end
+
+          it 'should return 500 for exceptions' do
+            get '/main/crasher'
+            last_response
+              .body
+              .should == {status: 500,
+                          message: 'Something went wrong...'}.to_json
+            last_response.status.should == 500
+          end
+        end
+
+        context 'exception_in_body is true' do
+          def app
+            app_for('7',
+                    catch_exceptions:  true,
+                    exception_in_body: true)
+          end
+
+          it 'should return 500 for exceptions' do
+            get '/main/crasher'
+            last_response
+              .body
+              .should == {status:  500,
+                          message: 'kaboom!'}.to_json
+            last_response.status.should == 500
+          end
+        end
+      end
+    end
+  end
+
   # TODO: Write unit tests for Kenji::App
   # TODO: Write unit tests for new root directory behavior.
 end
