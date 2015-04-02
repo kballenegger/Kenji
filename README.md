@@ -39,9 +39,9 @@ look like this, in `controller/hello.rb`:
 
 ```ruby
 class HelloController < Kenji::Controller
-    get '/world' do
-        {hello: :world}
-    end
+  get '/world' do
+    {hello: :world}
+  end
 end
 ```
 
@@ -50,19 +50,19 @@ A more representative example might be:
 ```ruby
 class UserController < Kenji::Controller
 
-    # ...
+  # ...
 
-    get '/:id/friends' do |id|
-        # list friends for id
-    end
+  get '/:id/friends' do |id|
+    # list friends for id
+  end
 
-    post '/:id/friend/:id' do |id, friend_id|
-        # add connection from user id to friend_id
-    end
+  post '/:id/friend/:id' do |id, friend_id|
+    # add connection from user id to friend_id
+  end
 
-    delete '/:id/friend/:id' do |id, friend_id|
-        # delete connection from user id to friend_id
-    end
+  delete '/:id/friend/:id' do |id, friend_id|
+    # delete connection from user id to friend_id
+  end
 end
 ```
 
