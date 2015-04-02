@@ -57,7 +57,6 @@ module Kenji
     #     an IO stread, this is where Kenji logging goes by default. defaults
     #     to $stderr
     #
-
     def initialize(env, *rest)
       raise ArgumentError unless rest.count == 2 || rest.count == 1
       root, options = *rest
@@ -74,10 +73,11 @@ module Kenji
       options[:directory] = File.expand_path(root) if root
 
       @options = {
-        catch_exceptions: true,
-        root_controller:  nil,
-        directory:        File.expand_path(Dir.getwd),
-        stderr:           $stderr
+        catch_exceptions:  true,
+        exception_in_body: false,
+        root_controller:   nil,
+        directory:         File.expand_path(Dir.getwd),
+        stderr:            $stderr,
       }.merge(options)
 
       @stderr = @options[:stderr]
@@ -129,7 +129,7 @@ module Kenji
     rescue Exception => e
       raise e unless @options[:catch_exceptions]
       # log exceptions
-      @stderr.puts e.inspect
+      @stderr.puts(e.inspect)
       e.backtrace.each {|b| @stderr.puts "  #{b}" }
       response_500(e)
     end
@@ -183,13 +183,7 @@ module Kenji
     #
     def respond_raw(status = 200, data)
       @status = status
-
-      body = if data.is_a?(StringIO) || data.kind_of?(IO)
-               data.string
-             else
-               [data]
-             end
-
+      body = data.is_a?(IO) ? data : [data]
       throw(:KenjiRespondControlFlowInterrupt, [@status, @headers, body])
     end
 
@@ -199,11 +193,12 @@ module Kenji
 
     # 500 error
     def response_500(exception = nil)
-      message = if exception.nil? || !@options[:exception_in_body]
-                  "Something went wrong..."
-                else
-                  exception.to_s
-                end
+      message =
+        if exception.nil? || !@options[:exception_in_body]
+          'Something went wrong...'
+        else
+          exception.to_s
+        end
 
       [500, @headers, [{status: 500, message: message}.to_json]]
     end
