@@ -18,21 +18,12 @@ Style/CollectionMethods:
     detect: 'find'
     find_all: 'select'
 
-# Use ` or %x around command literals.
-Style/CommandLiteral:
-  EnforcedStyle: percent_x
-  AllowInnerBackticks: false
-
 # Multi-line method chaining should be done with leading dots.
 Style/DotPosition:
   EnforcedStyle: leading
   SupportedStyles:
     - leading
     - trailing
-
-# Warn on empty else statements
-Style/EmptyElse:
-  EnforcedStyle: both
 
 # Use empty lines between defs.
 Style/EmptyLineBetweenDefs:
@@ -68,9 +59,6 @@ Style/GlobalVars:
 # needs to have to trigger this cop
 Style/GuardClause:
   MinBodyLength: 1
-
-Style/HashSyntax:
-  EnforcedStyle: ruby19_no_mixed_keys
 
 # Checks the indentation of the first key in a hash literal.
 Style/IndentHash:
