@@ -100,6 +100,14 @@ And already, your app is ready to go:
 
 ## Changelog
 
+#### 1.2.0
+
+- A new `exception_in_body` option (defaults to false) defines whether options
+  are returned to the HTTP response instead of the default “Something went
+  wrong...”
+- `kenji init` no longer generates a useless binary.
+- Internally, lots of style and best practices refactors.
+
 #### 1.1.2
 
 - The `respond_raw` method allows responding with raw data, instead of the
@@ -150,7 +158,7 @@ And already, your app is ready to go:
 
 - `before` command.
 - specs
-- passing 
+- passing
 
 ## Still to do
 
