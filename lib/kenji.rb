@@ -64,7 +64,7 @@ module Kenji
       options ||= {}
 
       @headers = {
-        'Content-Type' => 'application/json'
+        'Content-Type' => 'application/json',
       }
       @status = 200
       @env = env
@@ -110,11 +110,11 @@ module Kenji
           success    = true
         else
           acc = ''; out = '', success = false
-          while head = segments.shift
+          while (head = segments.shift)
             acc = "#{acc}/#{head}"
             # if we have a valid controller
-            if controller = controller_for(acc)
-              subpath = '/'+segments.join('/')
+            if (controller = controller_for(acc))
+              subpath = '/' + segments.join('/')
               out = controller.call(method, subpath).to_json
               success = true
               break
@@ -126,7 +126,7 @@ module Kenji
 
         [@status, @headers, [out]]
       end
-    rescue Exception => e
+    rescue => e
       raise e unless @options[:catch_exceptions]
       # log exceptions
       @stderr.puts(e.inspect)
@@ -140,10 +140,8 @@ module Kenji
     #
     #   kenji.header 'Content-Type' => 'hello/world'
     #
-    def header(hash={})
-      hash.each do |key, value|
-        @headers[key] = value
-      end
+    def header(hash = {})
+      @header.merge!(hash)
     end
 
     # Returns the response headers
@@ -168,13 +166,14 @@ module Kenji
 
     # Respond to the request
     #
-    def respond(code, message, hash={})
+    def respond(code, message, hash = {})
       @status = code
-      response = {            # default structure.
+      response = { # default structure.
         status:  code,
         message: message,
       }.merge(hash)
-      throw(:KenjiRespondControlFlowInterrupt, [@status, @headers, [response.to_json]])
+      throw(:KenjiRespondControlFlowInterrupt,
+            [@status, @headers, [response.to_json]])
     end
 
     # Respond with raw bytes
@@ -214,10 +213,11 @@ module Kenji
     def controller_for(subpath)
       subpath = '/_' if subpath == '/'
       path = "#{@root}controllers#{subpath}.rb"
-      return nil unless File.exists?(path)
+      return nil unless File.exist?(path)
       require path
       controller_name = subpath.split('/').last.sub(/^_/, 'Root')
-      controller_class = Object.const_get(controller_name.to_s.to_camelcase+'Controller')
+      controller_class =
+        Object.const_get(controller_name.to_s.to_camelcase + 'Controller')
       controller_instance(controller_class)
     end
 
@@ -226,8 +226,8 @@ module Kenji
     #
     def controller_instance(controller_class)
       # ensure protocol compliance
-      unless (controller_class.method_defined?(:call) &&
-              controller_class.instance_method(:call).arity == 2)
+      unless controller_class.method_defined?(:call) \
+          && controller_class.instance_method(:call).arity == 2
         return
       end
       controller = controller_class.new
@@ -238,4 +238,3 @@ module Kenji
 
   end
 end
-

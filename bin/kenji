@@ -1,6 +1,5 @@
 #!/usr/bin/env ruby
 
-
 unless ARGV.first == 'init'
   puts 'Usage: kenji init [project-name]'
   Process.exit
@@ -17,28 +16,32 @@ path = File.realpath(path)
 init_source = File.realpath(File.dirname(File.dirname(__FILE__))) << '/inited'
 
 for_earch_item = lambda do |item, base|
-    next if item == '.' || item == '..'
-    item_to_create = item.gsub('__APP_NAME__', app_name)
+  next if item == '.' || item == '..'
+  item_to_create = item.gsub('__APP_NAME__', app_name)
 
-    
-    if File.directory?("#{init_source}/#{base}/#{item}")
-        Dir.mkdir("#{path}/#{base}/#{item_to_create}") unless File.directory?("#{path}/#{base}/#{item}")
-        puts "Initializing directory #{base}/#{item_to_create}"
-        Dir.foreach("#{init_source}/#{base}/#{item}") { |i| for_earch_item.call(i, "#{base}/#{item}") }
-    else
-        puts "Generating content for file #{base}/#{item_to_create}"
-        data = ''
-        f = File.open("#{init_source}/#{base}/#{item}", 'r')
-        while line = f.gets
-            data += (line.gsub('__APP_NAME__', app_name))
-        end
-        f.close
-        f = File.open("#{path}/#{base}/#{item_to_create}", 'w')
-        f.puts data
-        f.close
+
+  if File.directory?("#{init_source}/#{base}/#{item}")
+    unless File.directory?("#{path}/#{base}/#{item}")
+      Dir.mkdir("#{path}/#{base}/#{item_to_create}")
     end
+    puts "Initializing directory #{base}/#{item_to_create}"
+    Dir.foreach("#{init_source}/#{base}/#{item}") do |i|
+      for_earch_item.call(i, "#{base}/#{item}")
+    end
+  else
+    puts "Generating content for file #{base}/#{item_to_create}"
+    data = ''
+    f = File.open("#{init_source}/#{base}/#{item}", 'r')
+    while (line = f.gets)
+      data += (line.gsub('__APP_NAME__', app_name))
+    end
+    f.close
+    f = File.open("#{path}/#{base}/#{item_to_create}", 'w')
+    f.puts data
+    f.close
+  end
 end
 
-Dir.foreach(init_source) { |i| for_earch_item.call(i, '.') }
+Dir.foreach(init_source) {|i| for_earch_item.call(i, '.') }
 
 system("cd #{path}; bundle install")

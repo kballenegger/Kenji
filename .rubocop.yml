@@ -1,3 +1,19 @@
+# Ignore Rubocop on some files...
+
+AllCops:
+  Exclude:
+    - 'spec/**/*'
+
+# Enabling of disabled-by-default checks:
+
+Style/CollectionMethods:
+  Enabled: true
+
+Style/Encoding:
+  Enabled: true
+
+######
+
 # Align the elements of a hash literal if they span more than one line.
 Style/AlignHash:
   EnforcedHashRocketStyle: table
@@ -32,10 +48,10 @@ Style/EmptyLineBetweenDefs:
   AllowAdjacentOneLineDefs: false
 
 Style/EmptyLinesAroundClassBody:
-  EnforcedStyle: empty_lines
+  Enabled: false
 
 Style/EmptyLinesAroundModuleBody:
-  EnforcedStyle: empty_lines
+  Enabled: false
 
 # Checks whether the source file has a utf-8 encoding comment or not
 # AutoCorrectEncodingComment must match the regex
@@ -91,12 +107,6 @@ Style/PercentLiteralDelimiters:
     '%w': ()
     '%W': ()
     '%x': ()
-
-
-# Use / or %r around regular expressions.
-Style/RegexpLiteral:
-  EnforcedStyle: slashes
-  AllowInnerSlashes: false
 
 Style/Semicolon:
   # Allow ; to separate several expressions on the same line.
@@ -207,14 +217,14 @@ Style/WordArray:
 Metrics/AbcSize:
   # The ABC size is a calculated magnitude, so this number can be a Fixnum or
   # a Float.
-  Max: 15
+  Max: 20
 
 Metrics/BlockNesting:
   Max: 3
 
 Metrics/ClassLength:
   CountComments: false  # count full line comments?
-  Max: 100
+  Max: 300
 
 # Avoid complex methods.
 Metrics/CyclomaticComplexity:
@@ -231,7 +241,7 @@ Metrics/LineLength:
 
 Metrics/MethodLength:
   CountComments: false  # count full line comments?
-  Max: 10
+  Max: 30
 
 Metrics/ParameterLists:
   Max: 5

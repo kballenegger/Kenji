@@ -26,7 +26,7 @@ class Main
     # else
     #   puts <<-EOO
     #   No verb defined. Usage: ./main [verb]
-    # 
+    #
     #   configure [--skip-update]:
     #       process the value of users
     #       optionally, skip the self-update process

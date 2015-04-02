@@ -56,20 +56,27 @@ module Kenji
     # segment or variable segment, and the leaf @action being the block
     #
     def self.route(*methods, path, &block)
+
       # bind the block to self as an instance method, so its context is correct
       define_method(:_tmp_route_action, &block)
       block = instance_method(:_tmp_route_action)
       remove_method(:_tmp_route_action)
+
       # store the block for each method
       methods.each do |method|
+
         node = ((@routes ||= {})[method] ||= {})
         segments = path.split('/')
-        segments = segments.drop(1) if segments.first == ''     # discard leading /'s empty segment
-        segments.each do |segment|                              # lazily create tree
-          segment = ':' if segment =~ /^:/                      # discard :variable name
+        # discard leading /'s empty segment
+        segments = segments.drop(1) if segments.first == ''
+        # lazily create tree
+        segments.each do |segment|
+          # discard :variable name
+          segment = ':' if segment =~ /^:/
           node = (node[segment.to_sym] ||= {})
         end
-        node[:@action] = block                                  # store block as leaf in @action
+        # store block as leaf in @action
+        node[:@action] = block
       end
       nil # void method
     end
@@ -84,14 +91,14 @@ module Kenji
     def self.pass(path, controller)
       node = (@passes ||= {})
       segments = path.split('/')
-      segments = segments.drop(1) if segments.first == ''     # discard leading /'s empty segment
+      # discard leading /'s empty segment
+      segments = segments.drop(1) if segments.first == ''
       segments.each do |segment|
         node = (node[segment.to_sym] ||= {})
         break if segment == '*'
       end
       node[:@controller] = controller
     end
-
 
     # This lets you define before blocks.
     #
@@ -108,7 +115,6 @@ module Kenji
       (@befores ||= []) << block
     end
 
-
     # Most likely only used by Kenji itself.
     # Override to implement your own routing, if you'd like.
     #
@@ -117,7 +123,8 @@ module Kenji
       self.class.befores.each {|b| b.bind(self).call }
 
       segments = path.split('/')
-      segments = segments.drop(1) if segments.first == ''     # discard leading /'s empty segment
+      # discard leading /'s empty segment
+      segments = segments.drop(1) if segments.first == ''
 
       # check for passes
       node = self.class.passes
@@ -138,19 +145,25 @@ module Kenji
       node = self.class.routes[method] || {}
       variables = []
       searching = true
-      segments.each do |segment|                              # traverse tree to find
+                              # traverse tree to find
+      segments.each do |segment|
         if searching && node[segment.to_sym]
-          node = node[segment.to_sym]                         # attempt to move down to the plain text segment
+          # attempt to move down to the plain text segment
+          node = node[segment.to_sym]
         elsif searching && node[:':']
-          node = node[:':']                                   # attempt to find a variable segment
-          variables << segment                                # either we've found a variable, or the `unless` below will trigger
+          # attempt to find a variable segment
+          node = node[:':']
+          # either we've found a variable, or the `unless` below will trigger
+          variables << segment
         else
-          return attempt_fallback(path)                       # route failed to match variable or segment node so attempt fallback
+          # route failed to match variable or segment node so attempt fallback
+          return attempt_fallback(path)
         end
       end
-      if node && action = node[:@action]                      # the block is stored in the @action leaf
+      # the block is stored in the @action leaf
+      if node && (action = node[:@action])
         return action.bind(self).call(*variables)
-      else                                                    # or, fallback if necessary store the block for each method
+      else # or, fallback if necessary store the block for each method
         return attempt_fallback(path)
       end
     end
@@ -175,13 +188,17 @@ module Kenji
     end
 
     private
+
     # Accessor for @routes
+
     def self.routes
       @routes || {}
     end
+
     def self.passes
       @passes || {}
     end
+
     def self.befores
       @befores || []
     end
@@ -190,16 +207,16 @@ module Kenji
       variables = {}
       match = false
 
-      while e = segments.shift
+      while (e = segments.shift)
         # return false unless node
         key = node.keys.first
-        if match = key.to_s.match(/^\:(\w+)/)
+        if (match = key.to_s.match(/^\:(\w+)/))
           node = node[key.to_sym]
           variables[match[1].to_sym] = e
           match = true
         else
           # if there is no match it should not pass
-          break unless match = node.has_key?(e.to_sym)
+          break unless (match = node.key?(e.to_sym))
           node = node[e.to_sym]
         end
 
@@ -215,4 +232,3 @@ module Kenji
     end
   end
 end
-
