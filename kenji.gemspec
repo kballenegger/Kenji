@@ -1,4 +1,4 @@
-$:.push File.expand_path('../lib', __FILE__)
+$LOAD_PATH.push(File.expand_path('../lib', __FILE__))
 require 'kenji/version'
 
 Gem::Specification.new do |s|

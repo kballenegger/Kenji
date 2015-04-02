@@ -31,9 +31,6 @@ Style/EmptyLineBetweenDefs:
   # need an empty line between them.
   AllowAdjacentOneLineDefs: false
 
-Style/EmptyLinesAroundBlockBody:
-  EnforcedStyle: empty_lines
-
 Style/EmptyLinesAroundClassBody:
   EnforcedStyle: empty_lines
 
