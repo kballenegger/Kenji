@@ -100,6 +100,11 @@ And already, your app is ready to go:
 
 ## Changelog
 
+#### 1.2.1
+
+- `respond_raw` now takes a second optional argument for additional headers.
+- Fix bug with `kenji.header`
+
 #### 1.2.0
 
 - A new `exception_in_body` option (defaults to false) defines whether options

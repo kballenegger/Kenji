@@ -141,7 +141,7 @@ module Kenji
     #   kenji.header 'Content-Type' => 'hello/world'
     #
     def header(hash = {})
-      @header.merge!(hash)
+      @headers.merge!(hash)
     end
 
     # Returns the response headers
@@ -178,12 +178,15 @@ module Kenji
 
     # Respond with raw bytes
     #
+    # `status` is 200 by default
+    # `header` is merged with @headers
     # `data` can either be a string or an IO object.
     #
-    def respond_raw(status = 200, data)
+    def respond_raw(status = 200, headers = {}, data)
       @status = status
+      headers = @headers.merge(headers)
       body = data.is_a?(IO) ? data : [data]
-      throw(:KenjiRespondControlFlowInterrupt, [@status, @headers, body])
+      throw(:KenjiRespondControlFlowInterrupt, [@status, headers, body])
     end
 
 
