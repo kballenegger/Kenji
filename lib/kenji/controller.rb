@@ -138,7 +138,10 @@ module Kenji
         f[:variables].each do |k, v|
           instance.instance_variable_set(:"@#{k}", v)
         end
-        return instance.call(method, f[:remaining_segments].join('/'))
+        # 404s don't return
+        catch(:KenjiPass404) do
+          return instance.call(method, f[:remaining_segments].join('/'))
+        end
       end
 
       # regular routing
@@ -169,14 +172,14 @@ module Kenji
     end
 
     def attempt_fallback(path)
-      if respond_to? :fallback
+      if respond_to?(:fallback)
         if self.class.instance_method(:fallback).arity == 1
           return fallback(path)
         else
           return fallback
         end
       else
-        kenji.respond(404, 'Not found!')
+        throw(:KenjiPass404)
       end
     end
 

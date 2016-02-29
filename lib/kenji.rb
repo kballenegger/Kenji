@@ -103,21 +103,24 @@ module Kenji
         # ensure existence of leading /'s empty segment
         segments = segments.unshift('') unless segments.first == ''
 
-        if @options[:root_controller]
-          controller = controller_instance(@options[:root_controller])
-          subpath    = segments.join('/')
-          out        = controller.call(method, subpath).to_json
-          success    = true
-        else
-          acc = ''; out = '', success = false
-          while (head = segments.shift)
-            acc = "#{acc}/#{head}"
-            # if we have a valid controller
-            if (controller = controller_for(acc))
-              subpath = '/' + segments.join('/')
-              out = controller.call(method, subpath).to_json
-              success = true
-              break
+        out = ''; success = false
+        catch(:KenjiPass404) do
+          if @options[:root_controller]
+            controller = controller_instance(@options[:root_controller])
+            subpath    = segments.join('/')
+            out        = controller.call(method, subpath).to_json
+            success    = true
+          else
+            acc = ''; out = ''; success = false
+            while (head = segments.shift)
+              acc = "#{acc}/#{head}"
+              # if we have a valid controller
+              if (controller = controller_for(acc))
+                subpath = '/' + segments.join('/')
+                out = controller.call(method, subpath).to_json
+                success = true
+                break
+              end
             end
           end
         end

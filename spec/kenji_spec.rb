@@ -7,7 +7,8 @@ require 'kenji'
 
 # NOTE: these tests make use of the controllers defined in test/controllers.
 
-def app_for(path, opts={})
+def app_for(path, opts = {})
+  opts = {catch_exceptions: false}.merge(opts)
   lambda do |env|
     kenji = Kenji::Kenji.new(env, File.dirname(__FILE__)+'/'+path, opts)
     kenji.stderr = double(puts: nil)
@@ -147,6 +148,28 @@ describe Kenji::Kenji, 'expected responses' do
       last_response.body.should == expected_response
       last_response.status.should == 200
     end
+
+    it "should use pass controller and 404" do
+      get '/main/foo/foo_id/pass/40404'
+      last_response.status.should == 404
+    end
+
+    it "should use bar controller and 404 using fallback method" do
+      get '/main/foo/foo_id/bar/40404'
+      last_response.status.should == 1337
+    end
+
+    it "should use pass via bar controller" do
+      get '/main/foo/foo_id/bar/passed/test'
+      expected_response = { :test => 'hello!' }.to_json
+      last_response.body.should == expected_response
+      last_response.status.should == 200
+    end
+
+    it "should use pass via bar controller and 404 using fallback method" do
+      get '/main/foo/foo_id/bar/passed/40404'
+      last_response.status.should == 1337
+    end
   end
 
   context '5' do
@@ -154,7 +177,7 @@ describe Kenji::Kenji, 'expected responses' do
       require File.expand_path('./5/controllers/main.rb', File.dirname(__FILE__))
     end
 
-    def app; app_for('5', root_controller: Spec5::MainController); end
+    def app; app_for('5', root_controller: Spec5::MainController, catch_exceptions: true); end
 
     it "should use main controller for /" do
       get '/'
