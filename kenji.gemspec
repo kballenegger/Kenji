@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.homepage    = 'https://github.com/kballenegger/kenji'
 
   s.add_dependency 'json'
-  s.add_dependency 'rack', '~> 1.5.2'
+  s.add_dependency 'rack', '>= 1.5'
   s.add_development_dependency 'rake'
   s.add_development_dependency 'rspec'
   s.add_development_dependency 'rack-test'

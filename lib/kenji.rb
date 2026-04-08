@@ -93,7 +93,10 @@ module Kenji
 
         # deal with static files
         static = "#{@root}public#{path}"
-        return Rack::File.new("#{@root}public").call(@env) if File.file?(static)
+        if File.file?(static)
+          file_server = defined?(Rack::Files) ? Rack::Files : Rack::File
+          return file_server.new("#{@root}public").call(@env)
+        end
 
 
         # new routing code
@@ -185,9 +188,9 @@ module Kenji
     # `header` is merged with @headers
     # `data` can either be a string or an IO object.
     #
-    def respond_raw(status = 200, headers = {}, data)
+    def respond_raw(status = 200, data)
       @status = status
-      headers = @headers.merge(headers)
+      headers = @headers
       body = data.is_a?(IO) ? data : [data]
       throw(:KenjiRespondControlFlowInterrupt, [@status, headers, body])
     end

@@ -100,6 +100,13 @@ And already, your app is ready to go:
 
 ## Changelog
 
+#### 1.3.0
+
+- Passed controller who don’t implement fallback (i.e. 404) methods return
+  execution to their parent, where it can be handled by parent’s fallback
+  method. Previously, it would return a generic JSON 404.
+- Fix `respond_raw` issue introduced in 1.2.1
+
 #### 1.2.1
 
 - `respond_raw` now takes a second optional argument for additional headers.
